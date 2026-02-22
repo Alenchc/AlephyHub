@@ -34,7 +34,7 @@ local Window = Fluent:CreateWindow({
     Icon = "rbxassetid://11210651131"
 })
 
--- [[ FLOATING BUTTON ROUNDED & ANTI MACET ]]
+-- [[ FLOATING BUTTON ROUNDED & FIX KLIK ]]
 local ScreenGui = Instance.new("ScreenGui")
 local ImageButton = Instance.new("ImageButton")
 local UICorner = Instance.new("UICorner")
@@ -52,14 +52,14 @@ ImageButton.Image = "rbxassetid://11210651131"
 ImageButton.Active = true
 ImageButton.Draggable = true 
 
-UICorner.CornerRadius = UDim.new(0, 15) -- Rounded
+UICorner.CornerRadius = UDim.new(0, 15)
 UICorner.Parent = ImageButton
 
+-- Fungsi Klik Anti Macet
 ImageButton.MouseButton1Click:Connect(function()
     game:GetService("VirtualInputManager"):SendKeyEvent(true, Enum.KeyCode.LeftControl, false, game)
 end)
 
--- [[ TABS SETUP ]]
 local Tabs = {
     Player = Window:AddTab({ Title = "Player", Icon = "user" }),
     Auto = Window:AddTab({ Title = "Auto", Icon = "play" }),
@@ -68,7 +68,7 @@ local Tabs = {
     Setting = Window:AddTab({ Title = "Setting", Icon = "settings" })
 }
 
--- [[ TAB PLAYER ]]
+-- [[ TAB PLAYER - BALIK LAGI ]]
 local UserSection = Tabs.Player:AddSection("User Status")
 local UserLabel = Tabs.Player:AddParagraph({ Title = "Username: " .. game.Players.LocalPlayer.Name })
 local PingLabel = Tabs.Player:AddParagraph({ Title = "Ping: Calculating..." })
@@ -83,7 +83,7 @@ task.spawn(function()
     end
 end)
 
--- [[ TAB AUTO ]]
+-- [[ TAB AUTO - LENGKAP ]]
 local FarmSection = Tabs.Auto:AddSection("Farming Tools")
 Tabs.Auto:AddDropdown("SelectItem", {
     Title = "Select Item",
@@ -108,14 +108,19 @@ Tabs.Mics:AddToggle("WalkspeedToggle", {Title = "Walkspeed", Default = false}):O
     end
 end)
 Tabs.Mics:AddToggle("Noclip", {Title = "No Clip", Default = false})
-Tabs.Mics:AddToggle("Fly", {Title = "Fly", Default = false})
 
--- [[ TAB WEBHOOK ]]
+-- [[ TAB WEBHOOK - NOTIFIER BALIK ]]
 local WebhookSection = Tabs.Webhook:AddSection("Discord Notifier")
 Tabs.Webhook:AddInput("WebhookURL", {
     Title = "Webhook Link",
     Placeholder = "Enter Discord Webhook URL",
     Callback = function(Value) _G.WebhookURL = Value end
+})
+Tabs.Webhook:AddDropdown("Notifier", {
+    Title = "Select Notifier",
+    Values = {"Autofarm", "Autoplant", "Autoharvest"},
+    Multi = true,
+    Default = {},
 })
 
 -- [[ TAB SETTING ]]
