@@ -78,27 +78,23 @@ local FPSLabel = Tabs.Player:AddParagraph({
 })
 
 task.spawn(function()
-    local RunService = game:GetService("RunService")
-    local lastTime = tick()
-    local frameCount = 0
+    while task.wait(1) do
+        local ping = 0
+        local fps = 0
 
-    RunService.RenderStepped:Connect(function()
-        frameCount += 1
+        pcall(function()
+            ping = math.floor(game.Players.LocalPlayer:GetNetworkPing() * 1000)
+        end)
 
-        if tick() - lastTime >= 1 then
-            local fps = frameCount
-            frameCount = 0
-            lastTime = tick()
+        pcall(function()
+            local t = tick()
+            task.wait()
+            fps = math.floor(1 / (tick() - t))
+        end)
 
-            local ping = 0
-            pcall(function()
-                ping = math.floor(game.Players.LocalPlayer:GetNetworkPing() * 1000)
-            end)
-
-            PingLabel:SetContent("Ping: " .. ping .. " ms")
-            FPSLabel:SetContent("FPS: " .. tostring(fps))
-        end
-    end)
+        PingLabel:SetContent("Ping: " .. ping .. " ms")
+        FPSLabel:SetContent("FPS: " .. tostring(fps))
+    end
 end)
 
 -- [[ TAB AUTO ]]
