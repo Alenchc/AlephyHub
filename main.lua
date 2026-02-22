@@ -41,7 +41,7 @@ local Window = Fluent:CreateWindow({
     Acrylic = true,
     Theme = "Dark",
     MinimizeKey = Enum.KeyCode.LeftControl,
-    Icon = "rbxassetid://11210651131"
+    Icon = "rbxthumb://type=Asset&id=11210651131&w=150&h=150"
 })
 
 local Tabs = {
@@ -203,14 +203,14 @@ local UICorner = Instance.new("UICorner")
 ScreenGui.Name = "AlephyToggle"
 ScreenGui.IgnoreGuiInset = true
 ScreenGui.DisplayOrder = 10
-ScreenGui.Enabled = false -- mulai tersembunyi karena window masih terbuka
+ScreenGui.Enabled = false -- tersembunyi saat window pertama kali terbuka
 ScreenGui.Parent = game:GetService("CoreGui")
 
 ImageButton.Parent = ScreenGui
 ImageButton.BackgroundColor3 = Color3.fromRGB(150, 0, 0)
 ImageButton.Size = UDim2.new(0, 45, 0, 45)
 ImageButton.Position = UDim2.new(0.1, 0, 0.1, 0)
-ImageButton.Image = "rbxassetid://11210651131"
+ImageButton.Image = "rbxthumb://type=Asset&id=11210651131&w=150&h=150" -- fix logo
 ImageButton.Draggable = true
 
 UICorner.CornerRadius = UDim.new(0, 12)
@@ -218,38 +218,51 @@ UICorner.Parent = ImageButton
 
 local windowMinimized = false
 
+local function setMinimized(state)
+    windowMinimized = state
+    ScreenGui.Enabled = state
+end
+
+-- Tombol merah ditekan = restore window
 ImageButton.MouseButton1Click:Connect(function()
-    windowMinimized = false
-    ScreenGui.Enabled = false
-    Window:Minimize() -- Fluent toggle minimize/restore dengan fungsi yang sama
+    setMinimized(false)
+    Window:Minimize()
 end)
 
--- Deteksi minimize via MinimizeKey (LeftControl) atau tombol X minimize Fluent
--- Fluent tidak punya callback resmi, jadi kita pantau visibility window
-task.spawn(function()
-    local coreGui = game:GetService("CoreGui")
-    while task.wait(0.3) do
-        -- Cari Fluent GUI
-        local fluentGui = coreGui:FindFirstChild("Fluent")
+-- Deteksi MinimizeKey untuk PC (LeftControl)
+game:GetService("UserInputService").InputBegan:Connect(function(input, gameProcessed)
+    if input.KeyCode == Enum.KeyCode.LeftControl then
+        setMinimized(not windowMinimized)
+    end
+end)
 
-        if not fluentGui then
-            -- Window sudah di-close sepenuhnya, destroy tombol
+-- Connect ke tombol minimize bawaan Fluent + handle close total
+task.spawn(function()
+    task.wait(1) -- tunggu Fluent selesai render
+    local coreGui = game:GetService("CoreGui")
+    local fluentGui = coreGui:FindFirstChild("Fluent")
+
+    if not fluentGui then return end
+
+    -- Cari dan connect tombol minimize/close bawaan Fluent
+    for _, btn in ipairs(fluentGui:GetDescendants()) do
+        if (btn:IsA("ImageButton") or btn:IsA("TextButton")) then
+            if btn.Name == "Minimize" or btn.Name == "MinimizeButton" or btn.Name == "Close" then
+                btn.MouseButton1Click:Connect(function()
+                    task.wait(0.1)
+                    setMinimized(true)
+                end)
+            end
+        end
+    end
+
+    -- Pantau jika window di-close total
+    while task.wait(0.5) do
+        if not coreGui:FindFirstChild("Fluent") then
             if ScreenGui and ScreenGui.Parent then
                 ScreenGui:Destroy()
             end
             break
-        end
-
-        -- Cek apakah main frame Fluent visible atau tidak
-        local mainFrame = fluentGui:FindFirstChildWhichIsA("Frame", true)
-        if mainFrame then
-            if not mainFrame.Visible and not windowMinimized then
-                windowMinimized = true
-                ScreenGui.Enabled = true
-            elseif mainFrame.Visible and windowMinimized then
-                windowMinimized = false
-                ScreenGui.Enabled = false
-            end
         end
     end
 end)
