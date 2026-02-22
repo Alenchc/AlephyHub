@@ -33,8 +33,8 @@ end)
 local Window = Fluent:CreateWindow({
     Title = "Alephy. [Beta Test]",
     SubTitle = "by Alench",
-    TabWidth = 140, -- Diperkecil agar lebih clean
-    Size = UDim2.fromOffset(440, 340), -- Ukuran lebih kecil lagi
+    TabWidth = 160, -- Dikembalikan agar teks tab tidak terpotong
+    Size = UDim2.fromOffset(440, 340),
     Resizable = true, 
     Acrylic = true, 
     Theme = "Dark",
@@ -49,13 +49,13 @@ local UICorner = Instance.new("UICorner")
 ScreenGui.Parent = game:GetService("CoreGui")
 ScreenGui.Name = "AlephyToggle"
 ScreenGui.IgnoreGuiInset = true 
-ScreenGui.DisplayOrder = 999999999 -- Memastikan di atas segala UI game
+ScreenGui.DisplayOrder = 10 -- Di bawah menu utama Fluent (Fluent biasanya 100+)
 
 ImageButton.Parent = ScreenGui
 ImageButton.BackgroundColor3 = Color3.fromRGB(150, 0, 0)
 ImageButton.BorderSizePixel = 0
 ImageButton.Position = UDim2.new(0.1, 0, 0.1, 0)
-ImageButton.Size = UDim2.new(0, 45, 0, 45) -- Ukuran tombol dikecilkan sedikit
+ImageButton.Size = UDim2.new(0, 45, 0, 45)
 ImageButton.Image = "rbxassetid://11210651131"
 ImageButton.Active = true
 ImageButton.Draggable = true 
@@ -67,10 +67,14 @@ ImageButton.MouseButton1Click:Connect(function()
     Window:Minimize()
 end)
 
--- Fix: Hapus toggle jika Window ditutup/destroy
-Window.OnChain:Connect(function()
-    if not game:GetService("CoreGui"):FindFirstChild(Window.Id) then
-        ScreenGui:Destroy()
+-- [[ AUTO-CLEANUP LOOP (Fix Tombol Gak Mau Hilang) ]]
+task.spawn(function()
+    while true do
+        task.wait(1)
+        if not game:GetService("CoreGui"):FindFirstChild(Window.Id) then
+            if ScreenGui then ScreenGui:Destroy() end
+            break
+        end
     end
 end)
 
@@ -85,7 +89,7 @@ local Tabs = {
 Tabs.Player:AddSection("Announcement")
 Tabs.Player:AddParagraph({
     Title = "Update Log",
-    Content = "v1.0.1 Beta:\n• Compact UI Size & Tab Width\n• Improved Z-Index Layering\n• Fix Auto-Clean on Close"
+    Content = "v1.0.2 Beta:\n• Fixed Toggle Auto-Cleanup\n• DisplayOrder Adjusted\n• Tab Width Restored"
 })
 
 Tabs.Player:AddSection("User Status")
