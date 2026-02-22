@@ -33,8 +33,8 @@ pcall(function()
 end)
 
 local Window = Fluent:CreateWindow({
-    Title = "Alephy. [Beta Test]",
-    SubTitle = "by Alench",
+    Title = "Alephy Hub",
+    SubTitle = "v1.1.0",
     TabWidth = 160, 
     Size = UDim2.fromOffset(440, 340),
     Resizable = true, 
@@ -52,14 +52,14 @@ local Tabs = {
     Setting = Window:AddTab({ Title = "Setting", Icon = "settings" })
 }
 
--- [[ TAB PLAYER - Announcement & Status digabung biar muncul ]]
-local InfoSection = Tabs.Player:AddSection("Information")
-
+-- [[ TAB PLAYER - STRUKTUR BARU ]]
+local SectionAnnounce = Tabs.Player:AddSection("Announcement")
 Tabs.Player:AddParagraph({
-    Title = "Announcement",
-    Content = "v1.0.9 Final Update:\n• Fixed Rendering Issue\n• Restored All Missing Menus\n• Webhook & Mics Fully Operational"
+    Title = "Update Log",
+    Content = "v1.1.0:\n• Fixed Rendering Elements\n• Clean Interface\n• Full Tab Recovery"
 })
 
+local SectionStatus = Tabs.Player:AddSection("User Status")
 Tabs.Player:AddParagraph({ Title = "Username: " .. game.Players.LocalPlayer.Name })
 local PingLabel = Tabs.Player:AddParagraph({ Title = "Ping: Calculating..." })
 local FPSLabel = Tabs.Player:AddParagraph({ Title = "FPS: Calculating..." })
@@ -74,7 +74,7 @@ task.spawn(function()
 end)
 
 -- [[ TAB AUTO ]]
-Tabs.Auto:AddSection("Farming Tools")
+local SectionFarm = Tabs.Auto:AddSection("Farming Tools")
 Tabs.Auto:AddDropdown("SelectFarmItem", {
     Title = "Select Item to Farm",
     Values = {"Wood", "Stone", "Iron", "Gold", "Diamond"},
@@ -98,7 +98,7 @@ Tabs.Auto:AddButton({
     end
 })
 
-Tabs.Auto:AddSection("Planting & Harvesting")
+local SectionPlant = Tabs.Auto:AddSection("Planting & Harvesting")
 Tabs.Auto:AddDropdown("SelectSeeds", {
     Title = "Select Seeds", Values = {"Seed A", "Seed B", "Seed C"}, Multi = false, Default = 1,
     Callback = function(Value) _G.SelectedSeed = Value end
@@ -111,18 +111,18 @@ Tabs.Auto:AddDropdown("SelectHarvest", {
 Tabs.Auto:AddToggle("AutoHarvest", {Title = "Auto Harvest", Default = false})
 
 -- [[ TAB MICS ]]
-Tabs.Mics:AddSection("Movement")
+local SectionMove = Tabs.Mics:AddSection("Movement")
 Tabs.Mics:AddToggle("WalkspeedToggle", {Title = "Walkspeed", Default = false}):OnChanged(function(Value)
     if game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("Humanoid") then
         game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = Value and 50 or 16
     end
 end)
 Tabs.Mics:AddToggle("Noclip", {Title = "No Clip", Default = false})
-Tabs.Mics:AddSection("Visual")
+local SectionVisual = Tabs.Mics:AddSection("Visual")
 Tabs.Mics:AddToggle("Zoom", {Title = "Infinite Zoom", Default = false})
 
 -- [[ TAB WEBHOOK ]]
-Tabs.Webhook:AddSection("Discord Notifier")
+local SectionWeb = Tabs.Webhook:AddSection("Discord Notifier")
 Tabs.Webhook:AddInput("WebhookURL", {
     Title = "Webhook Link", Placeholder = "URL Discord",
     Callback = function(Value) _G.WebhookURL = Value end
@@ -165,7 +165,7 @@ task.spawn(function()
     end
 end)
 
--- [[ TAB SETTING - Manager ditaruh paling bawah ]]
+-- [[ MANAGERS ]]
 SaveManager:SetLibrary(Fluent)
 InterfaceManager:SetLibrary(Fluent)
 SaveManager:SetFolder("AlephyConfig")
