@@ -15,10 +15,8 @@ local Fluent = loadstring(game:HttpGet("https://github.com/dawid-scripts/Fluent/
 local SaveManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/SaveManager.lua"))()
 local InterfaceManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/InterfaceManager.lua"))()
 
--- Inisialisasi awal
 _G.AutoFarm = false 
 
--- Panggil Autofarm
 task.spawn(function()
     pcall(function()
         loadstring(game:HttpGet("https://raw.githubusercontent.com/Alenchc/AlephyHub/main/autofarm.lua"))()
@@ -29,16 +27,14 @@ local Window = Fluent:CreateWindow({
     Title = "Alephy. [Beta Test]",
     SubTitle = "by Alench",
     TabWidth = 160,
-    Size = UDim2.fromOffset(580, 460), -- Ukuran tetap
+    Size = UDim2.fromOffset(580, 460),
     Acrylic = true, 
     Theme = "Dark",
     MinimizeKey = Enum.KeyCode.LeftControl,
     Icon = "rbxassetid://11210651131"
 })
 
---- --- --- --- --- --- --- --- --- --- --- ---
---- FIX TOMBOL MELAYANG (ROUNDED & ANTI MACET)
---- --- --- --- --- --- --- --- --- --- --- ---
+-- [[ FLOATING BUTTON ROUNDED & ANTI MACET ]]
 local ScreenGui = Instance.new("ScreenGui")
 local ImageButton = Instance.new("ImageButton")
 local UICorner = Instance.new("UICorner")
@@ -54,19 +50,16 @@ ImageButton.Position = UDim2.new(0.1, 0, 0.1, 0)
 ImageButton.Size = UDim2.new(0, 50, 0, 50)
 ImageButton.Image = "rbxassetid://11210651131"
 ImageButton.Active = true
-ImageButton.Draggable = true -- Bawaan Roblox biar enteng
+ImageButton.Draggable = true 
 
-UICorner.CornerRadius = UDim.new(0, 15) -- Membuat tombol rounded (tidak lancip)
+UICorner.CornerRadius = UDim.new(0, 15) -- Rounded
 UICorner.Parent = ImageButton
 
--- Fungsi Klik (Menggunakan VirtualInputManager agar tidak macet saat UI tertutup)
 ImageButton.MouseButton1Click:Connect(function()
     game:GetService("VirtualInputManager"):SendKeyEvent(true, Enum.KeyCode.LeftControl, false, game)
 end)
 
---- --- --- --- --- --- --- --- --- --- --- ---
---- MENU SETUP
---- --- --- --- --- --- --- --- --- --- --- ---
+-- [[ TABS SETUP ]]
 local Tabs = {
     Player = Window:AddTab({ Title = "Player", Icon = "user" }),
     Auto = Window:AddTab({ Title = "Auto", Icon = "play" }),
@@ -75,7 +68,9 @@ local Tabs = {
     Setting = Window:AddTab({ Title = "Setting", Icon = "settings" })
 }
 
-Tabs.Player:AddSection("User Status")
+-- [[ TAB PLAYER ]]
+local UserSection = Tabs.Player:AddSection("User Status")
+local UserLabel = Tabs.Player:AddParagraph({ Title = "Username: " .. game.Players.LocalPlayer.Name })
 local PingLabel = Tabs.Player:AddParagraph({ Title = "Ping: Calculating..." })
 local FPSLabel = Tabs.Player:AddParagraph({ Title = "FPS: Calculating..." })
 
@@ -88,23 +83,44 @@ task.spawn(function()
     end
 end)
 
+-- [[ TAB AUTO ]]
 local FarmSection = Tabs.Auto:AddSection("Farming Tools")
+Tabs.Auto:AddDropdown("SelectItem", {
+    Title = "Select Item",
+    Values = {"Wood", "Stone", "Gold", "Diamond"},
+    Multi = false,
+    Default = 1,
+})
 Tabs.Auto:AddToggle("AutoFarm", {Title = "Auto Farm", Default = false}):OnChanged(function(Value)
     _G.AutoFarm = Value
 end)
-
 Tabs.Auto:AddToggle("AutoCollect", {Title = "Auto Collect", Default = false})
 
+local PlantSection = Tabs.Auto:AddSection("Planting & Harvesting")
+Tabs.Auto:AddToggle("AutoPlant", {Title = "Auto Plant", Default = false})
+Tabs.Auto:AddToggle("AutoHarvest", {Title = "Auto Harvest", Default = false})
+
+-- [[ TAB MICS ]]
 local MovementSection = Tabs.Mics:AddSection("Movement")
 Tabs.Mics:AddToggle("WalkspeedToggle", {Title = "Walkspeed", Default = false}):OnChanged(function(Value)
     if game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("Humanoid") then
         game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = Value and 50 or 16
     end
 end)
+Tabs.Mics:AddToggle("Noclip", {Title = "No Clip", Default = false})
+Tabs.Mics:AddToggle("Fly", {Title = "Fly", Default = false})
 
--- Setting Management
-SaveManager:SetLibrary(Fluent)
+-- [[ TAB WEBHOOK ]]
+local WebhookSection = Tabs.Webhook:AddSection("Discord Notifier")
+Tabs.Webhook:AddInput("WebhookURL", {
+    Title = "Webhook Link",
+    Placeholder = "Enter Discord Webhook URL",
+    Callback = function(Value) _G.WebhookURL = Value end
+})
+
+-- [[ TAB SETTING ]]
 InterfaceManager:SetLibrary(Fluent)
+SaveManager:SetLibrary(Fluent)
 InterfaceManager:SetFolder("AlephyConfig")
 SaveManager:SetFolder("AlephyConfig/Configs")
 InterfaceManager:BuildInterfaceSection(Tabs.Setting)
