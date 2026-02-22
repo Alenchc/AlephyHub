@@ -15,6 +15,11 @@ local Fluent = loadstring(game:HttpGet("https://github.com/dawid-scripts/Fluent/
 local SaveManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/SaveManager.lua"))()
 local InterfaceManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/InterfaceManager.lua"))()
 
+-- [[ 1. ANTI-NUMPUK: HAPUS TOMBOL LAMA JIKA ADA ]]
+if game:GetService("CoreGui"):FindFirstChild("AlephyToggle") then
+    game:GetService("CoreGui").AlephyToggle:Destroy()
+end
+
 _G.AutoFarm = false 
 _G.FarmDelay = 0.08
 _G.HitCount = 1
@@ -36,13 +41,13 @@ local Window = Fluent:CreateWindow({
     Icon = "rbxassetid://11210651131"
 })
 
--- [[ FLOATING BUTTON SETUP ]]
+-- [[ 2. TOMBOL MELAYANG ]]
 local ScreenGui = Instance.new("ScreenGui")
 local ImageButton = Instance.new("ImageButton")
 local UICorner = Instance.new("UICorner")
 
 ScreenGui.Parent = game:GetService("CoreGui")
-ScreenGui.Name = "AlephyToggle"
+ScreenGui.Name = "AlephyToggle" -- Nama ini penting untuk pengecekan anti-numpuk
 ScreenGui.IgnoreGuiInset = true 
 
 ImageButton.Parent = ScreenGui
@@ -61,15 +66,7 @@ ImageButton.MouseButton1Click:Connect(function()
     Window:Minimize()
 end)
 
--- [[ LOGIKA ANTI NUMPUK (HAPUS ICON SAAT UI TUTUP) ]]
-Window.OnChain:Connect(function()
-    -- Jika Window dihancurkan, hapus ScreenGui tombol melayang
-    if not game:GetService("CoreGui"):FindFirstChild(Window.Id) then
-        ScreenGui:Destroy()
-    end
-end)
-
--- Tambahan: Hapus tombol melayang jika script di-stop via setting
+-- [[ 3. SETUP TABS ]]
 local Tabs = {
     Player = Window:AddTab({ Title = "Player", Icon = "user" }),
     Auto = Window:AddTab({ Title = "Auto", Icon = "play" }),
@@ -78,11 +75,11 @@ local Tabs = {
     Setting = Window:AddTab({ Title = "Setting", Icon = "settings" })
 }
 
--- [[ CONTENT TABS ]]
+-- [[ 4. ISI TAB PLAYER ]]
 local AnnounceSection = Tabs.Player:AddSection("Announcement")
 Tabs.Player:AddParagraph({
     Title = "Update Log",
-    Content = "v1.0.0 Beta:\n• Fixed Floating Button Stack\n• Added Auto-Clean UI\n• Added Farm Delay & Hit Count"
+    Content = "v1.0.0 Beta:\n• Fixed Stacking Icons (Anti-Numpuk)\n• Added Delay, Hit Count, Set Position\n• Zoom & Movement added"
 })
 
 local UserSection = Tabs.Player:AddSection("User Status")
@@ -99,7 +96,9 @@ task.spawn(function()
     end
 end)
 
+-- [[ 5. ISI TAB AUTO ]]
 local FarmSection = Tabs.Auto:AddSection("Farming Tools")
+
 Tabs.Auto:AddToggle("AutoFarm", {Title = "Auto Farm", Default = false}):OnChanged(function(Value)
     _G.AutoFarm = Value
 end)
@@ -130,21 +129,43 @@ Tabs.Auto:AddButton({
     end
 })
 
-Tabs.Mics:AddSection("Movement")
+Tabs.Auto:AddToggle("AutoCollect", {Title = "Auto Collect", Default = false})
+Tabs.Auto:AddToggle("AutoPlant", {Title = "Auto Plant", Default = false})
+Tabs.Auto:AddToggle("AutoHarvest", {Title = "Auto Harvest", Default = false})
+
+-- [[ 6. ISI TAB MICS ]]
+local MovementSection = Tabs.Mics:AddSection("Movement")
 Tabs.Mics:AddToggle("WalkspeedToggle", {Title = "Walkspeed", Default = false}):OnChanged(function(Value)
     if game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("Humanoid") then
         game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = Value and 50 or 16
     end
 end)
+Tabs.Mics:AddToggle("Noclip", {Title = "No Clip", Default = false})
+
+local VisualSection = Tabs.Mics:AddSection("Visual")
 Tabs.Mics:AddToggle("Zoom", {Title = "Infinite Zoom", Default = false})
 
--- [[ TAB SETTING (FIX RESET) ]]
+-- [[ 7. TAB WEBHOOK ]]
+local WebhookSection = Tabs.Webhook:AddSection("Discord Notifier")
+Tabs.Webhook:AddInput("WebhookURL", {
+    Title = "Webhook Link",
+    Placeholder = "Enter Discord Webhook URL",
+    Callback = function(Value) _G.WebhookURL = Value end
+})
+Tabs.Webhook:AddDropdown("Notifier", {
+    Title = "Select Notifier",
+    Values = {"Autofarm", "Autoplant", "Autoharvest"},
+    Multi = true,
+    Default = {},
+})
+
+-- [[ 8. TAB SETTING ]]
 local ConfigSection = Tabs.Setting:AddSection("Configuration")
 Tabs.Setting:AddButton({
     Title = "Reset Menu",
     Callback = function() 
-        ScreenGui:Destroy() -- Hapus tombol melayang
-        Window:Destroy()    -- Hapus UI Utama
+        ScreenGui:Destroy()
+        Window:Destroy()
     end
 })
 
