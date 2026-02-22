@@ -52,14 +52,14 @@ local Tabs = {
     Setting = Window:AddTab({ Title = "Setting", Icon = "settings" })
 }
 
--- [[ TAB PLAYER ]]
-Tabs.Player:AddSection("Announcement")
+-- [[ TAB PLAYER - Announcement & Status digabung biar muncul ]]
+local InfoSection = Tabs.Player:AddSection("Information")
+
 Tabs.Player:AddParagraph({
-    Title = "Update Log",
-    Content = "v1.0.8 Final:\n• Restored Announcement Tab\n• Fixed Missing Menus\n• Finalized UI Structure"
+    Title = "Announcement",
+    Content = "v1.0.9 Final Update:\n• Fixed Rendering Issue\n• Restored All Missing Menus\n• Webhook & Mics Fully Operational"
 })
 
-Tabs.Player:AddSection("User Status")
 Tabs.Player:AddParagraph({ Title = "Username: " .. game.Players.LocalPlayer.Name })
 local PingLabel = Tabs.Player:AddParagraph({ Title = "Ping: Calculating..." })
 local FPSLabel = Tabs.Player:AddParagraph({ Title = "FPS: Calculating..." })
@@ -165,7 +165,7 @@ task.spawn(function()
     end
 end)
 
--- [[ TAB SETTING & MANAGERS ]]
+-- [[ TAB SETTING - Manager ditaruh paling bawah ]]
 SaveManager:SetLibrary(Fluent)
 InterfaceManager:SetLibrary(Fluent)
 SaveManager:SetFolder("AlephyConfig")
