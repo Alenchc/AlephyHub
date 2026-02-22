@@ -25,6 +25,25 @@ local Window = Fluent:CreateWindow({
     Icon = "rbxassetid://111353464984890" 
 })
 
+-- Floating button
+local ScreenGui = Instance.new("ScreenGui")
+local ImageButton = Instance.new("ImageButton")
+
+ScreenGui.Parent = game:GetService("CoreGui")
+ScreenGui.Name = "AlephyToggle"
+
+ImageButton.Parent = ScreenGui
+ImageButton.BackgroundColor3 = Color3.fromRGB(150, 0, 0)
+ImageButton.BorderSizePixel = 0
+ImageButton.Position = UDim2.new(0.1, 0, 0.1, 0)
+ImageButton.Size = UDim2.new(0, 50, 0, 50)
+ImageButton.Image = "rbxassetid://111353464984890"
+ImageButton.Draggable = true
+
+ImageButton.MouseButton1Click:Connect(function()
+    game:GetService("VirtualInputManager"):SendKeyEvent(true, Enum.KeyCode.LeftControl, false, game)
+end)
+
 -- Notif sc
 Fluent:Notify({
     Title = "Alephy Hub",
@@ -36,7 +55,7 @@ local Tabs = {
     Player = Window:AddTab({ Title = "Player", Icon = "user" }),
     Auto = Window:AddTab({ Title = "Auto", Icon = "play" }),
     Mics = Window:AddTab({ Title = "Mics", Icon = "layers" }),
-    Webhook = Window:AddTab({ Title = "Webhook", Icon = "webhook" }),
+    Webhook = Window:AddTab({ Title = "Webhook", Icon = "factory" }),
     Setting = Window:AddTab({ Title = "Setting", Icon = "settings" })
 }
 
@@ -49,18 +68,26 @@ Tabs.Player:AddParagraph({
 })
 
 local UserSection = Tabs.Player:AddSection("User Status")
-local UserLabel = Tabs.Player:AddParagraph({ Title = "👤 Username: " .. game.Players.LocalPlayer.Name })
+local UserLabel = Tabs.Player:AddParagraph({ Title = "Username: " .. game.Players.LocalPlayer.Name })
 local PingLabel = Tabs.Player:AddParagraph({ Title = "Ping: Calculating..." })
 local FPSLabel = Tabs.Player:AddParagraph({ Title = "FPS: Calculating..." })
 
 spawn(function()
     while task.wait(1) do
         local fps = math.floor(1 / task.wait())
-        local ping = game:GetService("Stats").Network.ServerStatsItem["Data Ping"]:GetValueString()
-        PingLabel:SetTitle("Ping: " .. ping)
-        FPSLabel:SetTitle("FPS: " .. tostring(fps))
+       local pingNum = game:GetService("Stats").Network.ServerStatsItem["Data Ping"]:GetValue()
+        PingLabel:SetTitle("📶 Ping: " .. math.floor(pingNum) .. " ms") 
+        FPSLabel:SetTitle("💻 FPS: " .. tostring(fps))
     end
 end)
+
+for i = 1, 5 do
+    Tabs.Player:AddParagraph({ Title = " ", Content = " " })
+end
+
+Fluent:SetTheme("Dark") 
+
+Window:SelectTab(1)
 
 --- --- --- --- --- --- --- --- --- --- --- ---
 --- MENU AUTO
