@@ -34,17 +34,65 @@ local Window = Fluent:CreateWindow({
     Icon = "rbxassetid://11210651131"
 })
 
+local CustomTheme = Fluent.Themes.Dark
+CustomTheme.Accent = Color3.fromRGB(255, 0, 0)
+CustomTheme.WindowBackground = Color3.fromRGB(25, 0, 0)
+CustomTheme.TabBackground = Color3.fromRGB(35, 0, 0)
+CustomTheme.ElementBackground = Color3.fromRGB(40, 0, 0)
+CustomTheme.HeaderText = Color3.fromRGB(255, 255, 255) -- Tetap putih agar terbaca
+CustomTheme.MainRed = Color3.fromRGB(255, 0, 0)
+Fluent:SetTheme("Dark")
+
 local ScreenGui = Instance.new("ScreenGui")
 local ImageButton = Instance.new("ImageButton")
+local UICorner = Instance.new("UICorner")
+
 ScreenGui.Parent = game:GetService("CoreGui")
 ScreenGui.Name = "AlephyToggle"
+ScreenGui.IgnoreGuiInset = true -- Biar aman dari margin layar
+ScreenGui.DisplayOrder = 999
+
 ImageButton.Parent = ScreenGui
 ImageButton.BackgroundColor3 = Color3.fromRGB(150, 0, 0)
 ImageButton.BorderSizePixel = 0
 ImageButton.Position = UDim2.new(0.1, 0, 0.1, 0)
-ImageButton.Size = UDim2.new(0, 50, 0, 50)
+ImageButton.Size = UDim2.new(0, 55, 0, 55)
 ImageButton.Image = "rbxassetid://11210651131"
-ImageButton.Draggable = true
+ImageButton.ZIndex = 10
+
+UICorner.CornerRadius = UDim.new(0, 16) -- Level bulatnya (15px)
+UICorner.Parent = ImageButton
+
+local Dragging = false
+local DragInput, DragStart, StartPos
+
+ImageButton.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        Dragging = true
+        DragStart = input.Position
+        StartPos = ImageButton.Position
+    end
+end)
+
+ImageButton.InputChanged:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+        DragInput = input
+    end
+end)
+
+game:GetService("UserInputService").InputChanged:Connect(function(input)
+    if input == DragInput and Dragging then
+        local Delta = input.Position - DragStart
+        ImageButton.Position = UDim2.new(StartPos.X.Scale, StartPos.X.Offset + Delta.X, StartPos.Y.Scale, StartPos.Y.Offset + Delta.Y)
+    end
+end)
+
+ImageButton.InputEnded:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        Dragging = false
+    end
+end)
+
 ImageButton.MouseButton1Click:Connect(function()
     game:GetService("VirtualInputManager"):SendKeyEvent(true, Enum.KeyCode.LeftControl, false, game)
 end)
