@@ -16,7 +16,11 @@ local InterfaceManager = loadstring(game:HttpGet("https://raw.githubusercontent.
 
 _G.AutoFarm = false -- Default OFF
 spawn(function()
-    loadstring(game:HttpGet("https://raw.githubusercontent.com/Alenchc/AlephyHub/main/autofarm.lua"))()
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/Alenchc/AlephyHub/refs/heads/main/autofarm.lua"))()
+end)
+if not success then
+        warn("Gagal memuat Autofarm: " .. tostring(err))
+    end
 end)
 
 local Window = Fluent:CreateWindow({
