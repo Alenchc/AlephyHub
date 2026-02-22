@@ -18,7 +18,7 @@ local InterfaceManager = loadstring(game:HttpGet("https://raw.githubusercontent.
 -- Inisialisasi awal
 _G.AutoFarm = false 
 
--- Panggil Autofarm (Pakai pcall yang simpel biar gak crash)
+-- Panggil Autofarm
 task.spawn(function()
     pcall(function()
         loadstring(game:HttpGet("https://raw.githubusercontent.com/Alenchc/AlephyHub/main/autofarm.lua"))()
@@ -29,24 +29,16 @@ local Window = Fluent:CreateWindow({
     Title = "Alephy. [Beta Test]",
     SubTitle = "by Alench",
     TabWidth = 160,
-    Size = UDim2.fromOffset(580, 460),
+    Size = UDim2.fromOffset(580, 460), -- Ukuran tetap
     Acrylic = true, 
     Theme = "Dark",
     MinimizeKey = Enum.KeyCode.LeftControl,
     Icon = "rbxassetid://11210651131"
 })
 
--- KUNCI WARNA (Taruh setelah CreateWindow)
-do
-    local CustomTheme = Fluent.Themes.Dark
-    CustomTheme.Accent = Color3.fromRGB(255, 0, 0)
-    CustomTheme.WindowBackground = Color3.fromRGB(25, 0, 0)
-    CustomTheme.TabBackground = Color3.fromRGB(35, 0, 0)
-    CustomTheme.ElementBackground = Color3.fromRGB(40, 0, 0)
-    Fluent:SetTheme("Dark")
-end
-
--- TOMBOL MELAYANG (Script yang sudah stabil)
+--- --- --- --- --- --- --- --- --- --- --- ---
+--- FIX TOMBOL MELAYANG (ROUNDED & ANTI MACET)
+--- --- --- --- --- --- --- --- --- --- --- ---
 local ScreenGui = Instance.new("ScreenGui")
 local ImageButton = Instance.new("ImageButton")
 local UICorner = Instance.new("UICorner")
@@ -54,24 +46,27 @@ local UICorner = Instance.new("UICorner")
 ScreenGui.Parent = game:GetService("CoreGui")
 ScreenGui.Name = "AlephyToggle"
 ScreenGui.IgnoreGuiInset = true 
-ScreenGui.DisplayOrder = 999
 
 ImageButton.Parent = ScreenGui
 ImageButton.BackgroundColor3 = Color3.fromRGB(150, 0, 0)
+ImageButton.BorderSizePixel = 0
 ImageButton.Position = UDim2.new(0.1, 0, 0.1, 0)
 ImageButton.Size = UDim2.new(0, 50, 0, 50)
 ImageButton.Image = "rbxassetid://11210651131"
-ImageButton.ZIndex = 10
-ImageButton.Draggable = true -- Pakai bawaan biar enteng
+ImageButton.Active = true
+ImageButton.Draggable = true -- Bawaan Roblox biar enteng
 
-UICorner.CornerRadius = UDim.new(1, 0)
+UICorner.CornerRadius = UDim.new(0, 15) -- Membuat tombol rounded (tidak lancip)
 UICorner.Parent = ImageButton
 
+-- Fungsi Klik (Menggunakan VirtualInputManager agar tidak macet saat UI tertutup)
 ImageButton.MouseButton1Click:Connect(function()
     game:GetService("VirtualInputManager"):SendKeyEvent(true, Enum.KeyCode.LeftControl, false, game)
 end)
 
--- TAB & CONTENT
+--- --- --- --- --- --- --- --- --- --- --- ---
+--- MENU SETUP
+--- --- --- --- --- --- --- --- --- --- --- ---
 local Tabs = {
     Player = Window:AddTab({ Title = "Player", Icon = "user" }),
     Auto = Window:AddTab({ Title = "Auto", Icon = "play" }),
@@ -93,17 +88,27 @@ task.spawn(function()
     end
 end)
 
-Tabs.Auto:AddSection("Farming Tools")
+local FarmSection = Tabs.Auto:AddSection("Farming Tools")
 Tabs.Auto:AddToggle("AutoFarm", {Title = "Auto Farm", Default = false}):OnChanged(function(Value)
     _G.AutoFarm = Value
 end)
 
--- Setting
-InterfaceManager:SetLibrary(Fluent)
+Tabs.Auto:AddToggle("AutoCollect", {Title = "Auto Collect", Default = false})
+
+local MovementSection = Tabs.Mics:AddSection("Movement")
+Tabs.Mics:AddToggle("WalkspeedToggle", {Title = "Walkspeed", Default = false}):OnChanged(function(Value)
+    if game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("Humanoid") then
+        game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = Value and 50 or 16
+    end
+end)
+
+-- Setting Management
 SaveManager:SetLibrary(Fluent)
+InterfaceManager:SetLibrary(Fluent)
 InterfaceManager:SetFolder("AlephyConfig")
 SaveManager:SetFolder("AlephyConfig/Configs")
 InterfaceManager:BuildInterfaceSection(Tabs.Setting)
 SaveManager:BuildConfigSection(Tabs.Setting)
 
 Window:SelectTab(1)
+SaveManager:LoadAutoloadConfig()
