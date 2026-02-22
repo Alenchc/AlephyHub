@@ -44,40 +44,6 @@ local Window = Fluent:CreateWindow({
     Icon = "rbxassetid://11210651131"
 })
 
-local ScreenGui = Instance.new("ScreenGui")
-local ImageButton = Instance.new("ImageButton")
-local UICorner = Instance.new("UICorner")
-
-ScreenGui.Parent = game:GetService("CoreGui")
-ScreenGui.Name = "AlephyToggle"
-ScreenGui.IgnoreGuiInset = true 
-ScreenGui.DisplayOrder = 10
-
-ImageButton.Parent = ScreenGui
-ImageButton.BackgroundColor3 = Color3.fromRGB(150, 0, 0)
-ImageButton.BorderSizePixel = 0
-ImageButton.Position = UDim2.new(0.1, 0, 0.1, 0)
-ImageButton.Size = UDim2.new(0, 45, 0, 45)
-ImageButton.Image = "rbxassetid://11210651131"
-ImageButton.Active = true
-ImageButton.Draggable = true 
-
-UICorner.CornerRadius = UDim.new(0, 12)
-UICorner.Parent = ImageButton
-
-ImageButton.MouseButton1Click:Connect(function()
-    Window:Minimize()
-end)
-
-task.spawn(function()
-    while task.wait(0.5) do
-        if not game:GetService("CoreGui"):FindFirstChild(Window.Id) then
-            if ScreenGui then ScreenGui:Destroy() end
-            break
-        end
-    end
-end)
-
 local Tabs = {
     Player = Window:AddTab({ Title = "Player", Icon = "user" }),
     Auto = Window:AddTab({ Title = "Auto", Icon = "play" }),
@@ -86,14 +52,8 @@ local Tabs = {
     Setting = Window:AddTab({ Title = "Setting", Icon = "settings" })
 }
 
--- [[ 1. TAB PLAYER ]]
-Tabs.Player:AddSection("Announcement")
-Tabs.Player:AddParagraph({
-    Title = "Update Log",
-    Content = "v1.0.6 Final:\n• Fixed All Missing Menus\n• Full Webhook Implementation\n• Clean UI & Compact Size"
-})
-
-Tabs.Player:AddSection("User Status")
+-- [[ TAB PLAYER ]]
+local PlayerStatus = Tabs.Player:AddSection("User Status")
 Tabs.Player:AddParagraph({ Title = "Username: " .. game.Players.LocalPlayer.Name })
 local PingLabel = Tabs.Player:AddParagraph({ Title = "Ping: Calculating..." })
 local FPSLabel = Tabs.Player:AddParagraph({ Title = "FPS: Calculating..." })
@@ -107,8 +67,8 @@ task.spawn(function()
     end
 end)
 
--- [[ 2. TAB AUTO ]]
-Tabs.Auto:AddSection("Farming Tools")
+-- [[ TAB AUTO ]]
+local FarmSection = Tabs.Auto:AddSection("Farming Tools")
 Tabs.Auto:AddDropdown("SelectFarmItem", {
     Title = "Select Item to Farm",
     Values = {"Wood", "Stone", "Iron", "Gold", "Diamond"},
@@ -116,27 +76,12 @@ Tabs.Auto:AddDropdown("SelectFarmItem", {
     Default = 1,
     Callback = function(Value) _G.SelectedFarmItem = Value end
 })
-
 Tabs.Auto:AddToggle("AutoFarm", {Title = "Auto Farm", Default = false}):OnChanged(function(Value) _G.AutoFarm = Value end)
 Tabs.Auto:AddToggle("AutoCollect", {Title = "Auto Collect", Default = false})
-
 Tabs.Auto:AddInput("FarmDelayInput", {
-    Title = "Farm Delay",
-    Default = "0.08",
-    Placeholder = "Min 0.03",
-    Numeric = true,
-    Finished = true,
+    Title = "Farm Delay", Default = "0.08", Placeholder = "0.08", Numeric = true, Finished = true,
     Callback = function(Value) _G.FarmDelay = tonumber(Value) or 0.08 end
 })
-
-Tabs.Auto:AddInput("HitCountInput", {
-    Title = "Hit Count",
-    Placeholder = "Max Hit (Ex: 5)",
-    Numeric = true,
-    Finished = true,
-    Callback = function(Value) _G.HitCount = tonumber(Value) or 1 end
-})
-
 Tabs.Auto:AddButton({
     Title = "Set Position",
     Callback = function()
@@ -147,79 +92,74 @@ Tabs.Auto:AddButton({
     end
 })
 
-Tabs.Auto:AddSection("Planting & Harvesting")
+local PlantSection = Tabs.Auto:AddSection("Planting & Harvesting")
 Tabs.Auto:AddDropdown("SelectSeeds", {
-    Title = "Select Seeds",
-    Values = {"Seed A", "Seed B", "Seed C"}, 
-    Multi = false,
-    Default = 1,
+    Title = "Select Seeds", Values = {"Seed A", "Seed B", "Seed C"}, Multi = false, Default = 1,
     Callback = function(Value) _G.SelectedSeed = Value end
 })
-
 Tabs.Auto:AddToggle("AutoPlant", {Title = "Auto Plant", Default = false})
-
 Tabs.Auto:AddDropdown("SelectHarvest", {
-    Title = "Select Harvest Item",
-    Values = {"Crop A", "Crop B", "Crop C"}, 
-    Multi = false,
-    Default = 1,
+    Title = "Select Harvest Item", Values = {"Crop A", "Crop B", "Crop C"}, Multi = false, Default = 1,
     Callback = function(Value) _G.SelectedHarvestItem = Value end
 })
-
 Tabs.Auto:AddToggle("AutoHarvest", {Title = "Auto Harvest", Default = false})
 
--- [[ 3. TAB MICS ]]
-Tabs.Mics:AddSection("Movement")
+-- [[ TAB MICS ]]
+local MoveSection = Tabs.Mics:AddSection("Movement")
 Tabs.Mics:AddToggle("WalkspeedToggle", {Title = "Walkspeed", Default = false}):OnChanged(function(Value)
     if game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("Humanoid") then
         game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = Value and 50 or 16
     end
 end)
-
 Tabs.Mics:AddToggle("Noclip", {Title = "No Clip", Default = false})
-
-Tabs.Mics:AddSection("Visual")
+local VisualSection = Tabs.Mics:AddSection("Visual")
 Tabs.Mics:AddToggle("Zoom", {Title = "Infinite Zoom", Default = false})
 
--- [[ 4. TAB WEBHOOK ]]
-Tabs.Webhook:AddSection("Discord Notifier")
+-- [[ TAB WEBHOOK ]]
+local WebSection = Tabs.Webhook:AddSection("Discord Notifier")
 Tabs.Webhook:AddInput("WebhookURL", {
-    Title = "Webhook Link",
-    Placeholder = "Enter Discord Webhook URL",
+    Title = "Webhook Link", Placeholder = "URL Discord",
     Callback = function(Value) _G.WebhookURL = Value end
 })
-
 Tabs.Webhook:AddDropdown("NotifierOptions", {
-    Title = "Select Notifier",
-    Values = {"Autofarm", "Autoplant", "Autoharvest"},
-    Multi = true,
-    Default = {},
-    Callback = function(Value)
-        _G.SelectedNotifiers = Value
-    end
+    Title = "Select Notifier", Values = {"Autofarm", "Autoplant", "Autoharvest"}, Multi = true, Default = {},
+    Callback = function(Value) _G.SelectedNotifiers = Value end
 })
-
 Tabs.Webhook:AddButton({
     Title = "Run Webhook",
     Callback = function()
-        if _G.WebhookURL ~= "" then
-            Fluent:Notify({Title = "Alephy Hub", Content = "Webhook Executed!", Duration = 2})
-        else
-            Fluent:Notify({Title = "Alephy Hub", Content = "Error: URL is empty!", Duration = 2})
+        Fluent:Notify({Title = "Alephy Hub", Content = "Webhook Executed!", Duration = 2})
+    end
+})
+
+-- [[ TOMBOL MERAH ]]
+local ScreenGui = Instance.new("ScreenGui")
+local ImageButton = Instance.new("ImageButton")
+local UICorner = Instance.new("UICorner")
+ScreenGui.Parent = game:GetService("CoreGui")
+ScreenGui.Name = "AlephyToggle"
+ScreenGui.IgnoreGuiInset = true 
+ScreenGui.DisplayOrder = 10
+ImageButton.Parent = ScreenGui
+ImageButton.BackgroundColor3 = Color3.fromRGB(150, 0, 0)
+ImageButton.Size = UDim2.new(0, 45, 0, 45)
+ImageButton.Position = UDim2.new(0.1, 0, 0.1, 0)
+ImageButton.Image = "rbxassetid://11210651131"
+ImageButton.Draggable = true
+UICorner.CornerRadius = UDim.new(0, 12)
+UICorner.Parent = ImageButton
+ImageButton.MouseButton1Click:Connect(function() Window:Minimize() end)
+
+task.spawn(function()
+    while task.wait(0.5) do
+        if not game:GetService("CoreGui"):FindFirstChild(Window.Id) then
+            ScreenGui:Destroy()
+            break
         end
     end
-})
+end)
 
--- [[ 5. TAB SETTING ]]
-Tabs.Setting:AddSection("Menu Control")
-Tabs.Setting:AddButton({
-    Title = "Reset Menu",
-    Callback = function() 
-        ScreenGui:Destroy()
-        Window:Destroy()
-    end
-})
-
+-- [[ TAB SETTING & MANAGERS ]]
 SaveManager:SetLibrary(Fluent)
 InterfaceManager:SetLibrary(Fluent)
 SaveManager:SetFolder("AlephyConfig")
