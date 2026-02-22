@@ -33,8 +33,8 @@ end)
 local Window = Fluent:CreateWindow({
     Title = "Alephy. [Beta Test]",
     SubTitle = "by Alench",
-    TabWidth = 160,
-    Size = UDim2.fromOffset(470, 380), -- UKURAN DEFAULT LEBIH KECIL & CLEAN
+    TabWidth = 140, -- Diperkecil agar lebih clean
+    Size = UDim2.fromOffset(440, 340), -- Ukuran lebih kecil lagi
     Resizable = true, 
     Acrylic = true, 
     Theme = "Dark",
@@ -49,21 +49,29 @@ local UICorner = Instance.new("UICorner")
 ScreenGui.Parent = game:GetService("CoreGui")
 ScreenGui.Name = "AlephyToggle"
 ScreenGui.IgnoreGuiInset = true 
+ScreenGui.DisplayOrder = 999999999 -- Memastikan di atas segala UI game
 
 ImageButton.Parent = ScreenGui
 ImageButton.BackgroundColor3 = Color3.fromRGB(150, 0, 0)
 ImageButton.BorderSizePixel = 0
 ImageButton.Position = UDim2.new(0.1, 0, 0.1, 0)
-ImageButton.Size = UDim2.new(0, 50, 0, 50)
+ImageButton.Size = UDim2.new(0, 45, 0, 45) -- Ukuran tombol dikecilkan sedikit
 ImageButton.Image = "rbxassetid://11210651131"
 ImageButton.Active = true
 ImageButton.Draggable = true 
 
-UICorner.CornerRadius = UDim.new(0, 15)
+UICorner.CornerRadius = UDim.new(0, 12)
 UICorner.Parent = ImageButton
 
 ImageButton.MouseButton1Click:Connect(function()
     Window:Minimize()
+end)
+
+-- Fix: Hapus toggle jika Window ditutup/destroy
+Window.OnChain:Connect(function()
+    if not game:GetService("CoreGui"):FindFirstChild(Window.Id) then
+        ScreenGui:Destroy()
+    end
 end)
 
 local Tabs = {
@@ -74,12 +82,12 @@ local Tabs = {
     Setting = Window:AddTab({ Title = "Setting", Icon = "settings" })
 }
 
--- [[ TAB PLAYER ]]
 Tabs.Player:AddSection("Announcement")
 Tabs.Player:AddParagraph({
     Title = "Update Log",
-    Content = "v1.0.0 Beta:\n• Compact UI Size\n• Clean Interface (No Blank Bars)\n• Resizable Menu Enabled"
+    Content = "v1.0.1 Beta:\n• Compact UI Size & Tab Width\n• Improved Z-Index Layering\n• Fix Auto-Clean on Close"
 })
+
 Tabs.Player:AddSection("User Status")
 Tabs.Player:AddParagraph({ Title = "Username: " .. game.Players.LocalPlayer.Name })
 local PingLabel = Tabs.Player:AddParagraph({ Title = "Ping: Calculating..." })
@@ -94,7 +102,6 @@ task.spawn(function()
     end
 end)
 
--- [[ TAB AUTO ]]
 local FarmSection = Tabs.Auto:AddSection("Farming Tools")
 Tabs.Auto:AddDropdown("SelectFarmItem", {
     Title = "Select Item to Farm",
@@ -117,7 +124,7 @@ Tabs.Auto:AddInput("FarmDelayInput", {
 })
 Tabs.Auto:AddInput("HitCountInput", {
     Title = "Hit Count",
-    Placeholder = "Max Hit (Ex: 5)",
+    Placeholder = "Max Hit",
     Numeric = true,
     Finished = true,
     Callback = function(Value) _G.HitCount = tonumber(Value) or 1 end
@@ -131,6 +138,7 @@ Tabs.Auto:AddButton({
         end
     end
 })
+
 local PlantSection = Tabs.Auto:AddSection("Planting & Harvesting")
 Tabs.Auto:AddDropdown("SelectSeeds", {
     Title = "Select Seeds",
@@ -149,7 +157,6 @@ Tabs.Auto:AddDropdown("SelectHarvest", {
 })
 Tabs.Auto:AddToggle("AutoHarvest", {Title = "Auto Harvest", Default = false})
 
--- [[ TAB MICS ]]
 Tabs.Mics:AddSection("Movement")
 Tabs.Mics:AddToggle("WalkspeedToggle", {Title = "Walkspeed", Default = false}):OnChanged(function(Value)
     if game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("Humanoid") then
@@ -160,7 +167,6 @@ Tabs.Mics:AddToggle("Noclip", {Title = "No Clip", Default = false})
 Tabs.Mics:AddSection("Visual")
 Tabs.Mics:AddToggle("Zoom", {Title = "Infinite Zoom", Default = false})
 
--- [[ TAB WEBHOOK ]]
 Tabs.Webhook:AddSection("Discord Notifier")
 Tabs.Webhook:AddInput("WebhookURL", {
     Title = "Webhook Link",
@@ -174,7 +180,6 @@ Tabs.Webhook:AddDropdown("Notifier", {
     Default = {},
 })
 
--- [[ TAB SETTING ]]
 Tabs.Setting:AddSection("Menu Control")
 Tabs.Setting:AddButton({
     Title = "Reset Menu",
