@@ -15,7 +15,7 @@ local Fluent = loadstring(game:HttpGet("https://github.com/dawid-scripts/Fluent/
 local SaveManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/SaveManager.lua"))()
 local InterfaceManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/InterfaceManager.lua"))()
 
--- [[ 1. ANTI-NUMPUK: HAPUS TOMBOL LAMA JIKA ADA ]]
+-- [[ 1. ANTI-NUMPUK ]]
 if game:GetService("CoreGui"):FindFirstChild("AlephyToggle") then
     game:GetService("CoreGui").AlephyToggle:Destroy()
 end
@@ -47,7 +47,7 @@ local ImageButton = Instance.new("ImageButton")
 local UICorner = Instance.new("UICorner")
 
 ScreenGui.Parent = game:GetService("CoreGui")
-ScreenGui.Name = "AlephyToggle" -- Nama ini penting untuk pengecekan anti-numpuk
+ScreenGui.Name = "AlephyToggle"
 ScreenGui.IgnoreGuiInset = true 
 
 ImageButton.Parent = ScreenGui
@@ -76,13 +76,13 @@ local Tabs = {
 }
 
 -- [[ 4. ISI TAB PLAYER ]]
-local AnnounceSection = Tabs.Player:AddSection("Announcement")
+Tabs.Player:AddSection("Announcement")
 Tabs.Player:AddParagraph({
     Title = "Update Log",
-    Content = "v1.0.0 Beta:\n• Fixed Stacking Icons (Anti-Numpuk)\n• Added Delay, Hit Count, Set Position\n• Zoom & Movement added"
+    Content = "v1.0.0 Beta:\n• Fixed Stacking Icons\n• UI Render Fix\n• Added Farm Delay & Hit Count"
 })
 
-local UserSection = Tabs.Player:AddSection("User Status")
+Tabs.Player:AddSection("User Status")
 Tabs.Player:AddParagraph({ Title = "👤 Username: " .. game.Players.LocalPlayer.Name })
 local PingLabel = Tabs.Player:AddParagraph({ Title = "📶 Ping: Calculating..." })
 local FPSLabel = Tabs.Player:AddParagraph({ Title = "💻 FPS: Calculating..." })
@@ -97,7 +97,7 @@ task.spawn(function()
 end)
 
 -- [[ 5. ISI TAB AUTO ]]
-local FarmSection = Tabs.Auto:AddSection("Farming Tools")
+Tabs.Auto:AddSection("Farming Tools")
 
 Tabs.Auto:AddToggle("AutoFarm", {Title = "Auto Farm", Default = false}):OnChanged(function(Value)
     _G.AutoFarm = Value
@@ -129,12 +129,13 @@ Tabs.Auto:AddButton({
     end
 })
 
+Tabs.Auto:AddSection("Extra Farm")
 Tabs.Auto:AddToggle("AutoCollect", {Title = "Auto Collect", Default = false})
 Tabs.Auto:AddToggle("AutoPlant", {Title = "Auto Plant", Default = false})
 Tabs.Auto:AddToggle("AutoHarvest", {Title = "Auto Harvest", Default = false})
 
 -- [[ 6. ISI TAB MICS ]]
-local MovementSection = Tabs.Mics:AddSection("Movement")
+Tabs.Mics:AddSection("Movement")
 Tabs.Mics:AddToggle("WalkspeedToggle", {Title = "Walkspeed", Default = false}):OnChanged(function(Value)
     if game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("Humanoid") then
         game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = Value and 50 or 16
@@ -142,11 +143,11 @@ Tabs.Mics:AddToggle("WalkspeedToggle", {Title = "Walkspeed", Default = false}):O
 end)
 Tabs.Mics:AddToggle("Noclip", {Title = "No Clip", Default = false})
 
-local VisualSection = Tabs.Mics:AddSection("Visual")
+Tabs.Mics:AddSection("Visual")
 Tabs.Mics:AddToggle("Zoom", {Title = "Infinite Zoom", Default = false})
 
 -- [[ 7. TAB WEBHOOK ]]
-local WebhookSection = Tabs.Webhook:AddSection("Discord Notifier")
+Tabs.Webhook:AddSection("Discord Notifier")
 Tabs.Webhook:AddInput("WebhookURL", {
     Title = "Webhook Link",
     Placeholder = "Enter Discord Webhook URL",
@@ -160,7 +161,7 @@ Tabs.Webhook:AddDropdown("Notifier", {
 })
 
 -- [[ 8. TAB SETTING ]]
-local ConfigSection = Tabs.Setting:AddSection("Configuration")
+Tabs.Setting:AddSection("Menu Control")
 Tabs.Setting:AddButton({
     Title = "Reset Menu",
     Callback = function() 
@@ -169,12 +170,12 @@ Tabs.Setting:AddButton({
     end
 })
 
-InterfaceManager:SetLibrary(Fluent)
+-- Bagian SaveManager dipindah ke paling bawah agar tidak memblock render menu
 SaveManager:SetLibrary(Fluent)
-InterfaceManager:SetFolder("AlephyConfig")
+InterfaceManager:SetLibrary(Fluent)
 SaveManager:SetFolder("AlephyConfig/Configs")
+InterfaceManager:SetFolder("AlephyConfig")
 InterfaceManager:BuildInterfaceSection(Tabs.Setting)
 SaveManager:BuildConfigSection(Tabs.Setting)
 
 Window:SelectTab(1)
-SaveManager:LoadAutoloadConfig()
