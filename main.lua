@@ -13,6 +13,7 @@ local Fluent = loadstring(game:HttpGet("https://github.com/dawid-scripts/Fluent/
 local SaveManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/SaveManager.lua"))()
 local InterfaceManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/InterfaceManager.lua"))()
 
+-- Anti-Numpuk saat Re-execute
 if game:GetService("CoreGui"):FindFirstChild("AlephyToggle") then
     game:GetService("CoreGui").AlephyToggle:Destroy()
 end
@@ -33,8 +34,8 @@ end)
 local Window = Fluent:CreateWindow({
     Title = "Alephy. [Beta Test]",
     SubTitle = "by Alench",
-    TabWidth = 160, -- Dikembalikan agar teks tab tidak terpotong
-    Size = UDim2.fromOffset(440, 340),
+    TabWidth = 160, 
+    Size = UDim2.fromOffset(440, 340), -- Setelan Kecil
     Resizable = true, 
     Acrylic = true, 
     Theme = "Dark",
@@ -42,6 +43,7 @@ local Window = Fluent:CreateWindow({
     Icon = "rbxassetid://11210651131"
 })
 
+-- [[ TOMBOL MERAH BALIK LAGI ]]
 local ScreenGui = Instance.new("ScreenGui")
 local ImageButton = Instance.new("ImageButton")
 local UICorner = Instance.new("UICorner")
@@ -49,14 +51,14 @@ local UICorner = Instance.new("UICorner")
 ScreenGui.Parent = game:GetService("CoreGui")
 ScreenGui.Name = "AlephyToggle"
 ScreenGui.IgnoreGuiInset = true 
-ScreenGui.DisplayOrder = 10 -- Di bawah menu utama Fluent (Fluent biasanya 100+)
+ScreenGui.DisplayOrder = 10 -- Di bawah menu utama biar ga nutupin Tab
 
 ImageButton.Parent = ScreenGui
 ImageButton.BackgroundColor3 = Color3.fromRGB(150, 0, 0)
 ImageButton.BorderSizePixel = 0
 ImageButton.Position = UDim2.new(0.1, 0, 0.1, 0)
 ImageButton.Size = UDim2.new(0, 45, 0, 45)
-ImageButton.Image = "rbxassetid://11210651131"
+ImageButton.Image = "rbxassetid://11210651131" -- Pake logo kamu juga
 ImageButton.Active = true
 ImageButton.Draggable = true 
 
@@ -67,12 +69,11 @@ ImageButton.MouseButton1Click:Connect(function()
     Window:Minimize()
 end)
 
--- [[ AUTO-CLEANUP LOOP (Fix Tombol Gak Mau Hilang) ]]
+-- [[ FIX: HILANG SAAT CLOSE ]]
 task.spawn(function()
-    while true do
-        task.wait(1)
+    while task.wait(0.5) do
         if not game:GetService("CoreGui"):FindFirstChild(Window.Id) then
-            if ScreenGui then ScreenGui:Destroy() end
+            ScreenGui:Destroy()
             break
         end
     end
@@ -86,10 +87,11 @@ local Tabs = {
     Setting = Window:AddTab({ Title = "Setting", Icon = "settings" })
 }
 
+-- [[ ISI TAB PLAYER ]]
 Tabs.Player:AddSection("Announcement")
 Tabs.Player:AddParagraph({
     Title = "Update Log",
-    Content = "v1.0.2 Beta:\n• Fixed Toggle Auto-Cleanup\n• DisplayOrder Adjusted\n• Tab Width Restored"
+    Content = "v1.0.4 Beta:\n• Compact Size & Toggle Button Restored\n• Fixed Auto-Clean Loop\n• Clean Text Status"
 })
 
 Tabs.Player:AddSection("User Status")
@@ -106,6 +108,7 @@ task.spawn(function()
     end
 end)
 
+-- [[ ISI TAB AUTO ]]
 local FarmSection = Tabs.Auto:AddSection("Farming Tools")
 Tabs.Auto:AddDropdown("SelectFarmItem", {
     Title = "Select Item to Farm",
@@ -161,6 +164,7 @@ Tabs.Auto:AddDropdown("SelectHarvest", {
 })
 Tabs.Auto:AddToggle("AutoHarvest", {Title = "Auto Harvest", Default = false})
 
+-- [[ ISI TAB MICS ]]
 Tabs.Mics:AddSection("Movement")
 Tabs.Mics:AddToggle("WalkspeedToggle", {Title = "Walkspeed", Default = false}):OnChanged(function(Value)
     if game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("Humanoid") then
@@ -171,19 +175,7 @@ Tabs.Mics:AddToggle("Noclip", {Title = "No Clip", Default = false})
 Tabs.Mics:AddSection("Visual")
 Tabs.Mics:AddToggle("Zoom", {Title = "Infinite Zoom", Default = false})
 
-Tabs.Webhook:AddSection("Discord Notifier")
-Tabs.Webhook:AddInput("WebhookURL", {
-    Title = "Webhook Link",
-    Placeholder = "Enter Discord Webhook URL",
-    Callback = function(Value) _G.WebhookURL = Value end
-})
-Tabs.Webhook:AddDropdown("Notifier", {
-    Title = "Select Notifier",
-    Values = {"Autofarm", "Autoplant", "Autoharvest"},
-    Multi = true,
-    Default = {},
-})
-
+-- [[ ISI TAB SETTING ]]
 Tabs.Setting:AddSection("Menu Control")
 Tabs.Setting:AddButton({
     Title = "Reset Menu",
