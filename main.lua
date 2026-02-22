@@ -53,7 +53,13 @@ local Tabs = {
 }
 
 -- [[ TAB PLAYER ]]
-local PlayerStatus = Tabs.Player:AddSection("User Status")
+Tabs.Player:AddSection("Announcement")
+Tabs.Player:AddParagraph({
+    Title = "Update Log",
+    Content = "v1.0.8 Final:\n• Restored Announcement Tab\n• Fixed Missing Menus\n• Finalized UI Structure"
+})
+
+Tabs.Player:AddSection("User Status")
 Tabs.Player:AddParagraph({ Title = "Username: " .. game.Players.LocalPlayer.Name })
 local PingLabel = Tabs.Player:AddParagraph({ Title = "Ping: Calculating..." })
 local FPSLabel = Tabs.Player:AddParagraph({ Title = "FPS: Calculating..." })
@@ -68,7 +74,7 @@ task.spawn(function()
 end)
 
 -- [[ TAB AUTO ]]
-local FarmSection = Tabs.Auto:AddSection("Farming Tools")
+Tabs.Auto:AddSection("Farming Tools")
 Tabs.Auto:AddDropdown("SelectFarmItem", {
     Title = "Select Item to Farm",
     Values = {"Wood", "Stone", "Iron", "Gold", "Diamond"},
@@ -92,7 +98,7 @@ Tabs.Auto:AddButton({
     end
 })
 
-local PlantSection = Tabs.Auto:AddSection("Planting & Harvesting")
+Tabs.Auto:AddSection("Planting & Harvesting")
 Tabs.Auto:AddDropdown("SelectSeeds", {
     Title = "Select Seeds", Values = {"Seed A", "Seed B", "Seed C"}, Multi = false, Default = 1,
     Callback = function(Value) _G.SelectedSeed = Value end
@@ -105,18 +111,18 @@ Tabs.Auto:AddDropdown("SelectHarvest", {
 Tabs.Auto:AddToggle("AutoHarvest", {Title = "Auto Harvest", Default = false})
 
 -- [[ TAB MICS ]]
-local MoveSection = Tabs.Mics:AddSection("Movement")
+Tabs.Mics:AddSection("Movement")
 Tabs.Mics:AddToggle("WalkspeedToggle", {Title = "Walkspeed", Default = false}):OnChanged(function(Value)
     if game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("Humanoid") then
         game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = Value and 50 or 16
     end
 end)
 Tabs.Mics:AddToggle("Noclip", {Title = "No Clip", Default = false})
-local VisualSection = Tabs.Mics:AddSection("Visual")
+Tabs.Mics:AddSection("Visual")
 Tabs.Mics:AddToggle("Zoom", {Title = "Infinite Zoom", Default = false})
 
 -- [[ TAB WEBHOOK ]]
-local WebSection = Tabs.Webhook:AddSection("Discord Notifier")
+Tabs.Webhook:AddSection("Discord Notifier")
 Tabs.Webhook:AddInput("WebhookURL", {
     Title = "Webhook Link", Placeholder = "URL Discord",
     Callback = function(Value) _G.WebhookURL = Value end
@@ -153,7 +159,7 @@ ImageButton.MouseButton1Click:Connect(function() Window:Minimize() end)
 task.spawn(function()
     while task.wait(0.5) do
         if not game:GetService("CoreGui"):FindFirstChild(Window.Id) then
-            ScreenGui:Destroy()
+            if ScreenGui then ScreenGui:Destroy() end
             break
         end
     end
