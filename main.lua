@@ -13,10 +13,12 @@ local Fluent = loadstring(game:HttpGet("https://github.com/dawid-scripts/Fluent/
 local SaveManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/SaveManager.lua"))()
 local InterfaceManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/InterfaceManager.lua"))()
 
+-- Cleanup
 if game:GetService("CoreGui"):FindFirstChild("AlephyToggle") then
     game:GetService("CoreGui").AlephyToggle:Destroy()
 end
 
+-- Variables
 _G.AutoFarm = false 
 _G.FarmDelay = 0.08
 _G.HitCount = 1
@@ -26,22 +28,19 @@ _G.SelectedHarvestItem = ""
 _G.WebhookURL = ""
 _G.SelectedNotifiers = {}
 
-pcall(function()
-    task.spawn(function()
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/Alenchc/AlephyHub/main/autofarm.lua"))()
-    end)
-end)
+-- Asset ID Bulan Sabit (Paling Stabil)
+local MoonAsset = "rbxassetid://10734950309"
 
 local Window = Fluent:CreateWindow({
     Title = "Alephy Hub",
-    SubTitle = "v1.1.4",
+    SubTitle = "v1.1.5",
     TabWidth = 160, 
     Size = UDim2.fromOffset(440, 340),
     Resizable = true, 
     Acrylic = true, 
     Theme = "Dark",
     MinimizeKey = Enum.KeyCode.LeftControl,
-    Icon = "moon" -- Logo Bulan di Title
+    Icon = MoonAsset -- Pakai ID langsung biar ga jadi gerigi
 })
 
 local Tabs = {
@@ -53,34 +52,19 @@ local Tabs = {
 }
 
 -- [[ 1. TAB PLAYER ]]
-Tabs.Player:AddSection("Announcement")
+local AnnounceSection = Tabs.Player:AddSection("Announcement")
 Tabs.Player:AddParagraph({
     Title = "Update Log",
-    Content = "v1.1.4:\n• Full Menu Restored\n• Moon Aesthetic Fixed\n• Ping & FPS Stabilized"
+    Content = "v1.1.5 Final:\n• Moon Logo Fixed\n• All Menus Forced Render\n• Ping/FPS Bulletproof"
 })
 
-Tabs.Player:AddSection("User Status")
+local StatusSection = Tabs.Player:AddSection("User Status")
 Tabs.Player:AddParagraph({ Title = "Username", Content = game.Players.LocalPlayer.Name })
 local PingPara = Tabs.Player:AddParagraph({ Title = "Ping: Measuring...", Content = "" })
 local FPSPara = Tabs.Player:AddParagraph({ Title = "FPS: Measuring...", Content = "" })
 
-task.spawn(function()
-    local Stats = game:GetService("Stats")
-    local RunService = game:GetService("RunService")
-    while task.wait(0.5) do
-        local ping = "0"
-        local fps = "0"
-        pcall(function() ping = math.floor(Stats.Network.ServerStatsItem["Data Ping"]:GetValue()) end)
-        pcall(function() fps = math.floor(1 / RunService.RenderStepped:Wait()) end)
-        pcall(function()
-            PingPara:SetTitle("Ping: " .. tostring(ping) .. " ms")
-            FPSPara:SetTitle("FPS: " .. tostring(fps))
-        end)
-    end
-end)
-
 -- [[ 2. TAB AUTO ]]
-Tabs.Auto:AddSection("Farming Tools")
+local FarmSection = Tabs.Auto:AddSection("Farming Tools")
 Tabs.Auto:AddDropdown("SelectFarmItem", {
     Title = "Select Item to Farm",
     Values = {"Wood", "Stone", "Iron", "Gold", "Diamond"},
@@ -99,36 +83,36 @@ Tabs.Auto:AddButton({
     Callback = function()
         if game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
             _G.SavedPos = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame
-            Fluent:Notify({Title = "Alephy Hub", Content = "Position Set!", Duration = 2})
+            Fluent:Notify({Title = "Alephy", Content = "Position Set!", Duration = 2})
         end
     end
 })
 
-Tabs.Auto:AddSection("Planting & Harvesting")
+local PlantSection = Tabs.Auto:AddSection("Planting & Harvesting")
 Tabs.Auto:AddDropdown("SelectSeeds", {
     Title = "Select Seeds", Values = {"Seed A", "Seed B", "Seed C"}, Multi = false, Default = 1,
     Callback = function(Value) _G.SelectedSeed = Value end
 })
 Tabs.Auto:AddToggle("AutoPlant", {Title = "Auto Plant", Default = false})
 Tabs.Auto:AddDropdown("SelectHarvest", {
-    Title = "Select Harvest Item", Values = {"Crop A", "Crop B", "Crop C"}, Multi = false, Default = 1,
+    Title = "Select Harvest", Values = {"Crop A", "Crop B", "Crop C"}, Multi = false, Default = 1,
     Callback = function(Value) _G.SelectedHarvestItem = Value end
 })
 Tabs.Auto:AddToggle("AutoHarvest", {Title = "Auto Harvest", Default = false})
 
 -- [[ 3. TAB MICS ]]
-Tabs.Mics:AddSection("Movement")
+local MovementSection = Tabs.Mics:AddSection("Movement")
 Tabs.Mics:AddToggle("WalkspeedToggle", {Title = "Walkspeed", Default = false}):OnChanged(function(Value)
     if game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("Humanoid") then
         game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = Value and 50 or 16
     end
 end)
 Tabs.Mics:AddToggle("Noclip", {Title = "No Clip", Default = false})
-Tabs.Mics:AddSection("Visual")
+local VisualSection = Tabs.Mics:AddSection("Visual")
 Tabs.Mics:AddToggle("Zoom", {Title = "Infinite Zoom", Default = false})
 
 -- [[ 4. TAB WEBHOOK ]]
-Tabs.Webhook:AddSection("Discord Notifier")
+local WebhookSection = Tabs.Webhook:AddSection("Discord Notifier")
 Tabs.Webhook:AddInput("WebhookURL", {
     Title = "Webhook Link", Placeholder = "URL Discord",
     Callback = function(Value) _G.WebhookURL = Value end
@@ -140,35 +124,40 @@ Tabs.Webhook:AddDropdown("NotifierOptions", {
 Tabs.Webhook:AddButton({
     Title = "Run Webhook",
     Callback = function()
-        Fluent:Notify({Title = "Alephy Hub", Content = "Webhook Executed!", Duration = 2})
+        Fluent:Notify({Title = "Alephy", Content = "Webhook Executed!", Duration = 2})
     end
 })
 
--- [[ TOMBOL MERAH - LOGO BULAN ]]
-local ScreenGui = Instance.new("ScreenGui")
-local ImageButton = Instance.new("ImageButton")
-local UICorner = Instance.new("UICorner")
+-- [[ TOMBOL MERAH ]]
+local ScreenGui = Instance.new("ScreenGui", game:GetService("CoreGui"))
+local ImageButton = Instance.new("ImageButton", ScreenGui)
+local UICorner = Instance.new("UICorner", ImageButton)
 
-ScreenGui.Parent = game:GetService("CoreGui")
 ScreenGui.Name = "AlephyToggle"
-ScreenGui.IgnoreGuiInset = true 
 ScreenGui.DisplayOrder = 10
-
-ImageButton.Parent = ScreenGui
 ImageButton.BackgroundColor3 = Color3.fromRGB(150, 0, 0)
 ImageButton.Size = UDim2.new(0, 45, 0, 45)
 ImageButton.Position = UDim2.new(0.1, 0, 0.1, 0)
-ImageButton.Image = "rbxassetid://10734950309" -- Bulan Sabit
+ImageButton.Image = MoonAsset
 ImageButton.Draggable = true
-
 UICorner.CornerRadius = UDim.new(0, 12)
-UICorner.Parent = ImageButton
 ImageButton.MouseButton1Click:Connect(function() Window:Minimize() end)
 
+-- Logic Update Ping/FPS
 task.spawn(function()
+    local Stats = game:GetService("Stats")
+    local RunService = game:GetService("RunService")
     while task.wait(0.5) do
+        local ping = "0"
+        local fps = "0"
+        pcall(function() ping = math.floor(Stats.Network.ServerStatsItem["Data Ping"]:GetValue()) end)
+        pcall(function() fps = math.floor(1 / RunService.RenderStepped:Wait()) end)
+        pcall(function()
+            PingPara:SetTitle("Ping: " .. tostring(ping) .. " ms")
+            FPSPara:SetTitle("FPS: " .. tostring(fps))
+        end)
         if not game:GetService("CoreGui"):FindFirstChild(Window.Id) then
-            if ScreenGui then ScreenGui:Destroy() end
+            ScreenGui:Destroy()
             break
         end
     end
