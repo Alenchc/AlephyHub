@@ -34,8 +34,8 @@ local Window = Fluent:CreateWindow({
     Title = "Alephy. [Beta Test]",
     SubTitle = "by Alench",
     TabWidth = 160,
-    Size = UDim2.fromOffset(580, 460),
-    Resizable = true, -- SEKARANG BISA DIGEDEIN / DIKECILIN USER
+    Size = UDim2.fromOffset(470, 380), -- UKURAN DEFAULT LEBIH KECIL & CLEAN
+    Resizable = true, 
     Acrylic = true, 
     Theme = "Dark",
     MinimizeKey = Enum.KeyCode.LeftControl,
@@ -74,17 +74,16 @@ local Tabs = {
     Setting = Window:AddTab({ Title = "Setting", Icon = "settings" })
 }
 
--- [[ TAB PLAYER - NO EMOJI ]]
+-- [[ TAB PLAYER ]]
 Tabs.Player:AddSection("Announcement")
 Tabs.Player:AddParagraph({
     Title = "Update Log",
-    Content = "v1.0.0 Beta:\n• Resizable UI Enabled\n• Clean Text (No Emojis)\n• Fixed Bottom Margin"
+    Content = "v1.0.0 Beta:\n• Compact UI Size\n• Clean Interface (No Blank Bars)\n• Resizable Menu Enabled"
 })
 Tabs.Player:AddSection("User Status")
 Tabs.Player:AddParagraph({ Title = "Username: " .. game.Players.LocalPlayer.Name })
 local PingLabel = Tabs.Player:AddParagraph({ Title = "Ping: Calculating..." })
 local FPSLabel = Tabs.Player:AddParagraph({ Title = "FPS: Calculating..." })
-Tabs.Player:AddParagraph({Title = "", Content = ""})
 
 task.spawn(function()
     while task.wait(1) do
@@ -132,7 +131,7 @@ Tabs.Auto:AddButton({
         end
     end
 })
-Tabs.Auto:AddSection("Planting & Harvesting")
+local PlantSection = Tabs.Auto:AddSection("Planting & Harvesting")
 Tabs.Auto:AddDropdown("SelectSeeds", {
     Title = "Select Seeds",
     Values = {"Seed A", "Seed B", "Seed C"}, 
@@ -149,7 +148,6 @@ Tabs.Auto:AddDropdown("SelectHarvest", {
     Callback = function(Value) _G.SelectedHarvestItem = Value end
 })
 Tabs.Auto:AddToggle("AutoHarvest", {Title = "Auto Harvest", Default = false})
-Tabs.Auto:AddParagraph({Title = "", Content = ""})
 
 -- [[ TAB MICS ]]
 Tabs.Mics:AddSection("Movement")
@@ -161,7 +159,6 @@ end)
 Tabs.Mics:AddToggle("Noclip", {Title = "No Clip", Default = false})
 Tabs.Mics:AddSection("Visual")
 Tabs.Mics:AddToggle("Zoom", {Title = "Infinite Zoom", Default = false})
-Tabs.Mics:AddParagraph({Title = "", Content = ""})
 
 -- [[ TAB WEBHOOK ]]
 Tabs.Webhook:AddSection("Discord Notifier")
@@ -176,7 +173,6 @@ Tabs.Webhook:AddDropdown("Notifier", {
     Multi = true,
     Default = {},
 })
-Tabs.Webhook:AddParagraph({Title = "", Content = ""})
 
 -- [[ TAB SETTING ]]
 Tabs.Setting:AddSection("Menu Control")
@@ -190,8 +186,8 @@ Tabs.Setting:AddButton({
 
 SaveManager:SetLibrary(Fluent)
 InterfaceManager:SetLibrary(Fluent)
-SaveManager:SetFolder("AlephyConfig/Configs")
-InterfaceManager:SetFolder("AlephyConfig")
+SaveManager:SetFolder("AlephyConfig")
+InterfaceManager:SetFolder("AlephyConfig/Configs")
 InterfaceManager:BuildInterfaceSection(Tabs.Setting)
 SaveManager:BuildConfigSection(Tabs.Setting)
 
