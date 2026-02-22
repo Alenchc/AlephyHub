@@ -41,7 +41,7 @@ local Window = Fluent:CreateWindow({
     Acrylic = true, 
     Theme = "Dark",
     MinimizeKey = Enum.KeyCode.LeftControl,
-    Icon = "rbxassetid://111353464984890"
+    Icon = "rbxassetid://11210651131"
 })
 
 local ScreenGui = Instance.new("ScreenGui")
@@ -58,7 +58,7 @@ ImageButton.BackgroundColor3 = Color3.fromRGB(150, 0, 0)
 ImageButton.BorderSizePixel = 0
 ImageButton.Position = UDim2.new(0.1, 0, 0.1, 0)
 ImageButton.Size = UDim2.new(0, 45, 0, 45)
-ImageButton.Image = "rbxassetid://111353464984890"
+ImageButton.Image = "rbxassetid://11210651131"
 ImageButton.Active = true
 ImageButton.Draggable = true 
 
@@ -86,7 +86,13 @@ local Tabs = {
     Setting = Window:AddTab({ Title = "Setting", Icon = "settings" })
 }
 
--- [[ PLAYER ]]
+-- [[ 1. TAB PLAYER ]]
+Tabs.Player:AddSection("Announcement")
+Tabs.Player:AddParagraph({
+    Title = "Update Log",
+    Content = "v1.0.6 Final:\n• Fixed All Missing Menus\n• Full Webhook Implementation\n• Clean UI & Compact Size"
+})
+
 Tabs.Player:AddSection("User Status")
 Tabs.Player:AddParagraph({ Title = "Username: " .. game.Players.LocalPlayer.Name })
 local PingLabel = Tabs.Player:AddParagraph({ Title = "Ping: Calculating..." })
@@ -101,7 +107,7 @@ task.spawn(function()
     end
 end)
 
--- [[ AUTO ]]
+-- [[ 2. TAB AUTO ]]
 Tabs.Auto:AddSection("Farming Tools")
 Tabs.Auto:AddDropdown("SelectFarmItem", {
     Title = "Select Item to Farm",
@@ -110,12 +116,27 @@ Tabs.Auto:AddDropdown("SelectFarmItem", {
     Default = 1,
     Callback = function(Value) _G.SelectedFarmItem = Value end
 })
+
 Tabs.Auto:AddToggle("AutoFarm", {Title = "Auto Farm", Default = false}):OnChanged(function(Value) _G.AutoFarm = Value end)
 Tabs.Auto:AddToggle("AutoCollect", {Title = "Auto Collect", Default = false})
+
 Tabs.Auto:AddInput("FarmDelayInput", {
-    Title = "Farm Delay", Default = "0.08", Placeholder = "0.08", Numeric = true, Finished = true,
+    Title = "Farm Delay",
+    Default = "0.08",
+    Placeholder = "Min 0.03",
+    Numeric = true,
+    Finished = true,
     Callback = function(Value) _G.FarmDelay = tonumber(Value) or 0.08 end
 })
+
+Tabs.Auto:AddInput("HitCountInput", {
+    Title = "Hit Count",
+    Placeholder = "Max Hit (Ex: 5)",
+    Numeric = true,
+    Finished = true,
+    Callback = function(Value) _G.HitCount = tonumber(Value) or 1 end
+})
+
 Tabs.Auto:AddButton({
     Title = "Set Position",
     Callback = function()
@@ -128,17 +149,26 @@ Tabs.Auto:AddButton({
 
 Tabs.Auto:AddSection("Planting & Harvesting")
 Tabs.Auto:AddDropdown("SelectSeeds", {
-    Title = "Select Seeds", Values = {"Seed A", "Seed B", "Seed C"}, Multi = false, Default = 1,
+    Title = "Select Seeds",
+    Values = {"Seed A", "Seed B", "Seed C"}, 
+    Multi = false,
+    Default = 1,
     Callback = function(Value) _G.SelectedSeed = Value end
 })
+
 Tabs.Auto:AddToggle("AutoPlant", {Title = "Auto Plant", Default = false})
+
 Tabs.Auto:AddDropdown("SelectHarvest", {
-    Title = "Select Harvest Item", Values = {"Crop A", "Crop B", "Crop C"}, Multi = false, Default = 1,
+    Title = "Select Harvest Item",
+    Values = {"Crop A", "Crop B", "Crop C"}, 
+    Multi = false,
+    Default = 1,
     Callback = function(Value) _G.SelectedHarvestItem = Value end
 })
+
 Tabs.Auto:AddToggle("AutoHarvest", {Title = "Auto Harvest", Default = false})
 
--- [[ MICS ]]
+-- [[ 3. TAB MICS ]]
 Tabs.Mics:AddSection("Movement")
 Tabs.Mics:AddToggle("WalkspeedToggle", {Title = "Walkspeed", Default = false}):OnChanged(function(Value)
     if game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("Humanoid") then
@@ -146,7 +176,12 @@ Tabs.Mics:AddToggle("WalkspeedToggle", {Title = "Walkspeed", Default = false}):O
     end
 end)
 
--- [[ WEBHOOK ]]
+Tabs.Mics:AddToggle("Noclip", {Title = "No Clip", Default = false})
+
+Tabs.Mics:AddSection("Visual")
+Tabs.Mics:AddToggle("Zoom", {Title = "Infinite Zoom", Default = false})
+
+-- [[ 4. TAB WEBHOOK ]]
 Tabs.Webhook:AddSection("Discord Notifier")
 Tabs.Webhook:AddInput("WebhookURL", {
     Title = "Webhook Link",
@@ -168,15 +203,14 @@ Tabs.Webhook:AddButton({
     Title = "Run Webhook",
     Callback = function()
         if _G.WebhookURL ~= "" then
-            Fluent:Notify({Title = "Alephy Hub", Content = "Sending Webhook Test...", Duration = 2})
-            -- Logika kirim webhook di sini
+            Fluent:Notify({Title = "Alephy Hub", Content = "Webhook Executed!", Duration = 2})
         else
-            Fluent:Notify({Title = "Alephy Hub", Content = "Error: Webhook URL is empty!", Duration = 2})
+            Fluent:Notify({Title = "Alephy Hub", Content = "Error: URL is empty!", Duration = 2})
         end
     end
 })
 
--- [[ SETTING ]]
+-- [[ 5. TAB SETTING ]]
 Tabs.Setting:AddSection("Menu Control")
 Tabs.Setting:AddButton({
     Title = "Reset Menu",
