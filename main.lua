@@ -17,7 +17,7 @@ if game:GetService("CoreGui"):FindFirstChild("AlephyToggle") then
     game:GetService("CoreGui").AlephyToggle:Destroy()
 end
 
-_G.AutoFarm = false 
+_G.AutoFarm = false
 _G.FarmDelay = 0.08
 _G.HitCount = 1
 _G.SelectedFarmItem = ""
@@ -35,10 +35,10 @@ end)
 local Window = Fluent:CreateWindow({
     Title = "Alephy Hub",
     SubTitle = "v1.1.0",
-    TabWidth = 160, 
+    TabWidth = 160,
     Size = UDim2.fromOffset(440, 340),
-    Resizable = true, 
-    Acrylic = true, 
+    Resizable = true,
+    Acrylic = true,
     Theme = "Dark",
     MinimizeKey = Enum.KeyCode.LeftControl,
     Icon = "rbxassetid://11210651131"
@@ -52,29 +52,45 @@ local Tabs = {
     Setting = Window:AddTab({ Title = "Setting", Icon = "settings" })
 }
 
--- [[ TAB PLAYER - STRUKTUR BARU ]]
-local SectionAnnounce = Tabs.Player:AddSection("Announcement")
+-- [[ TAB PLAYER ]]
+Tabs.Player:AddSection("Announcement")
+
 Tabs.Player:AddParagraph({
     Title = "Update Log",
     Content = "v1.1.0:\n• Fixed Rendering Elements\n• Clean Interface\n• Full Tab Recovery"
 })
 
-local SectionStatus = Tabs.Player:AddSection("User Status")
-Tabs.Player:AddParagraph({ Title = "Username: " .. game.Players.LocalPlayer.Name })
-local PingLabel = Tabs.Player:AddParagraph({ Title = "Ping: Calculating..." })
-local FPSLabel = Tabs.Player:AddParagraph({ Title = "FPS: Calculating..." })
+Tabs.Player:AddSection("User Status")
+
+Tabs.Player:AddParagraph({
+    Title = "Username",
+    Content = game.Players.LocalPlayer.Name
+})
+
+local PingLabel = Tabs.Player:AddParagraph({
+    Title = "Ping",
+    Content = "Calculating..."
+})
+
+local FPSLabel = Tabs.Player:AddParagraph({
+    Title = "FPS",
+    Content = "Calculating..."
+})
 
 task.spawn(function()
     while task.wait(1) do
+        local ok, pingNum = pcall(function()
+            return game:GetService("Stats").Network.ServerStatsItem["Data Ping"]:GetValue()
+        end)
         local fps = math.floor(1 / task.wait())
-        local pingNum = game:GetService("Stats").Network.ServerStatsItem["Data Ping"]:GetValue()
-        PingLabel:SetTitle("Ping: " .. math.floor(pingNum) .. " ms") 
-        FPSLabel:SetTitle("FPS: " .. tostring(fps))
+        PingLabel:SetContent("Ping: " .. (ok and math.floor(pingNum) or "N/A") .. " ms")
+        FPSLabel:SetContent("FPS: " .. tostring(fps))
     end
 end)
 
 -- [[ TAB AUTO ]]
-local SectionFarm = Tabs.Auto:AddSection("Farming Tools")
+Tabs.Auto:AddSection("Farming Tools")
+
 Tabs.Auto:AddDropdown("SelectFarmItem", {
     Title = "Select Item to Farm",
     Values = {"Wood", "Stone", "Iron", "Gold", "Diamond"},
@@ -82,12 +98,22 @@ Tabs.Auto:AddDropdown("SelectFarmItem", {
     Default = 1,
     Callback = function(Value) _G.SelectedFarmItem = Value end
 })
-Tabs.Auto:AddToggle("AutoFarm", {Title = "Auto Farm", Default = false}):OnChanged(function(Value) _G.AutoFarm = Value end)
+
+Tabs.Auto:AddToggle("AutoFarm", {Title = "Auto Farm", Default = false}):OnChanged(function(Value)
+    _G.AutoFarm = Value
+end)
+
 Tabs.Auto:AddToggle("AutoCollect", {Title = "Auto Collect", Default = false})
+
 Tabs.Auto:AddInput("FarmDelayInput", {
-    Title = "Farm Delay", Default = "0.08", Placeholder = "0.08", Numeric = true, Finished = true,
+    Title = "Farm Delay",
+    Default = "0.08",
+    Placeholder = "0.08",
+    Numeric = true,
+    Finished = true,
     Callback = function(Value) _G.FarmDelay = tonumber(Value) or 0.08 end
 })
+
 Tabs.Auto:AddButton({
     Title = "Set Position",
     Callback = function()
@@ -98,72 +124,66 @@ Tabs.Auto:AddButton({
     end
 })
 
-local SectionPlant = Tabs.Auto:AddSection("Planting & Harvesting")
+Tabs.Auto:AddSection("Planting & Harvesting")
+
 Tabs.Auto:AddDropdown("SelectSeeds", {
-    Title = "Select Seeds", Values = {"Seed A", "Seed B", "Seed C"}, Multi = false, Default = 1,
+    Title = "Select Seeds",
+    Values = {"Seed A", "Seed B", "Seed C"},
+    Multi = false,
+    Default = 1,
     Callback = function(Value) _G.SelectedSeed = Value end
 })
+
 Tabs.Auto:AddToggle("AutoPlant", {Title = "Auto Plant", Default = false})
+
 Tabs.Auto:AddDropdown("SelectHarvest", {
-    Title = "Select Harvest Item", Values = {"Crop A", "Crop B", "Crop C"}, Multi = false, Default = 1,
+    Title = "Select Harvest Item",
+    Values = {"Crop A", "Crop B", "Crop C"},
+    Multi = false,
+    Default = 1,
     Callback = function(Value) _G.SelectedHarvestItem = Value end
 })
+
 Tabs.Auto:AddToggle("AutoHarvest", {Title = "Auto Harvest", Default = false})
 
 -- [[ TAB MICS ]]
-local SectionMove = Tabs.Mics:AddSection("Movement")
+Tabs.Mics:AddSection("Movement")
+
 Tabs.Mics:AddToggle("WalkspeedToggle", {Title = "Walkspeed", Default = false}):OnChanged(function(Value)
     if game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("Humanoid") then
         game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = Value and 50 or 16
     end
 end)
+
 Tabs.Mics:AddToggle("Noclip", {Title = "No Clip", Default = false})
-local SectionVisual = Tabs.Mics:AddSection("Visual")
+
+Tabs.Mics:AddSection("Visual")
+
 Tabs.Mics:AddToggle("Zoom", {Title = "Infinite Zoom", Default = false})
 
 -- [[ TAB WEBHOOK ]]
-local SectionWeb = Tabs.Webhook:AddSection("Discord Notifier")
+Tabs.Webhook:AddSection("Discord Notifier")
+
 Tabs.Webhook:AddInput("WebhookURL", {
-    Title = "Webhook Link", Placeholder = "URL Discord",
+    Title = "Webhook Link",
+    Placeholder = "URL Discord",
     Callback = function(Value) _G.WebhookURL = Value end
 })
+
 Tabs.Webhook:AddDropdown("NotifierOptions", {
-    Title = "Select Notifier", Values = {"Autofarm", "Autoplant", "Autoharvest"}, Multi = true, Default = {},
+    Title = "Select Notifier",
+    Values = {"Autofarm", "Autoplant", "Autoharvest"},
+    Multi = true,
+    Default = {},
     Callback = function(Value) _G.SelectedNotifiers = Value end
 })
+
 Tabs.Webhook:AddButton({
     Title = "Run Webhook",
     Callback = function()
         Fluent:Notify({Title = "Alephy Hub", Content = "Webhook Executed!", Duration = 2})
     end
 })
-
--- [[ TOMBOL MERAH ]]
-local ScreenGui = Instance.new("ScreenGui")
-local ImageButton = Instance.new("ImageButton")
-local UICorner = Instance.new("UICorner")
-ScreenGui.Parent = game:GetService("CoreGui")
-ScreenGui.Name = "AlephyToggle"
-ScreenGui.IgnoreGuiInset = true 
-ScreenGui.DisplayOrder = 10
-ImageButton.Parent = ScreenGui
-ImageButton.BackgroundColor3 = Color3.fromRGB(150, 0, 0)
-ImageButton.Size = UDim2.new(0, 45, 0, 45)
-ImageButton.Position = UDim2.new(0.1, 0, 0.1, 0)
-ImageButton.Image = "rbxassetid://11210651131"
-ImageButton.Draggable = true
-UICorner.CornerRadius = UDim.new(0, 12)
-UICorner.Parent = ImageButton
-ImageButton.MouseButton1Click:Connect(function() Window:Minimize() end)
-
-task.spawn(function()
-    while task.wait(0.5) do
-        if not game:GetService("CoreGui"):FindFirstChild(Window.Id) then
-            if ScreenGui then ScreenGui:Destroy() end
-            break
-        end
-    end
-end)
 
 -- [[ MANAGERS ]]
 SaveManager:SetLibrary(Fluent)
@@ -174,3 +194,62 @@ InterfaceManager:BuildInterfaceSection(Tabs.Setting)
 SaveManager:BuildConfigSection(Tabs.Setting)
 
 Window:SelectTab(1)
+
+-- [[ TOGGLE BUTTON (TOMBOL MERAH) ]]
+local ScreenGui = Instance.new("ScreenGui")
+local ImageButton = Instance.new("ImageButton")
+local UICorner = Instance.new("UICorner")
+
+ScreenGui.Name = "AlephyToggle"
+ScreenGui.IgnoreGuiInset = true
+ScreenGui.DisplayOrder = 10
+ScreenGui.Enabled = false -- mulai tersembunyi karena window masih terbuka
+ScreenGui.Parent = game:GetService("CoreGui")
+
+ImageButton.Parent = ScreenGui
+ImageButton.BackgroundColor3 = Color3.fromRGB(150, 0, 0)
+ImageButton.Size = UDim2.new(0, 45, 0, 45)
+ImageButton.Position = UDim2.new(0.1, 0, 0.1, 0)
+ImageButton.Image = "rbxassetid://11210651131"
+ImageButton.Draggable = true
+
+UICorner.CornerRadius = UDim.new(0, 12)
+UICorner.Parent = ImageButton
+
+local windowMinimized = false
+
+ImageButton.MouseButton1Click:Connect(function()
+    windowMinimized = false
+    ScreenGui.Enabled = false
+    Window:Minimize() -- Fluent toggle minimize/restore dengan fungsi yang sama
+end)
+
+-- Deteksi minimize via MinimizeKey (LeftControl) atau tombol X minimize Fluent
+-- Fluent tidak punya callback resmi, jadi kita pantau visibility window
+task.spawn(function()
+    local coreGui = game:GetService("CoreGui")
+    while task.wait(0.3) do
+        -- Cari Fluent GUI
+        local fluentGui = coreGui:FindFirstChild("Fluent")
+
+        if not fluentGui then
+            -- Window sudah di-close sepenuhnya, destroy tombol
+            if ScreenGui and ScreenGui.Parent then
+                ScreenGui:Destroy()
+            end
+            break
+        end
+
+        -- Cek apakah main frame Fluent visible atau tidak
+        local mainFrame = fluentGui:FindFirstChildWhichIsA("Frame", true)
+        if mainFrame then
+            if not mainFrame.Visible and not windowMinimized then
+                windowMinimized = true
+                ScreenGui.Enabled = true
+            elseif mainFrame.Visible and windowMinimized then
+                windowMinimized = false
+                ScreenGui.Enabled = false
+            end
+        end
+    end
+end)
