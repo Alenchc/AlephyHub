@@ -20,9 +20,12 @@ if game:GetService("CoreGui"):FindFirstChild("AlephyToggle") then
     game:GetService("CoreGui").AlephyToggle:Destroy()
 end
 
+-- Variabel Global
 _G.AutoFarm = false 
 _G.FarmDelay = 0.08
 _G.HitCount = 1
+_G.SelectedSeed = ""
+_G.SelectedHarvestItem = ""
 
 task.spawn(function()
     pcall(function()
@@ -75,11 +78,11 @@ local Tabs = {
     Setting = Window:AddTab({ Title = "Setting", Icon = "settings" })
 }
 
--- [[ 4. ISI TAB PLAYER ]]
+-- [[ 4. TAB PLAYER ]]
 Tabs.Player:AddSection("Announcement")
 Tabs.Player:AddParagraph({
     Title = "Update Log",
-    Content = "v1.0.0 Beta:\n• Fixed Stacking Icons\n• UI Render Fix\n• Added Farm Delay & Hit Count"
+    Content = "v1.0.0 Beta:\n• Clean UI Implementation\n• Added Seed & Harvest Selectors\n• Fixed Section Grouping"
 })
 
 Tabs.Player:AddSection("User Status")
@@ -97,20 +100,23 @@ task.spawn(function()
 end)
 
 -- [[ 5. ISI TAB AUTO ]]
-Tabs.Auto:AddSection("Farming Tools")
+local FarmSection = Tabs.Auto:AddSection("Farming Tools")
 
 Tabs.Auto:AddToggle("AutoFarm", {Title = "Auto Farm", Default = false}):OnChanged(function(Value)
     _G.AutoFarm = Value
 end)
 
-Tabs.Auto:AddSlider("DelaySlider", {
+Tabs.Auto:AddToggle("AutoCollect", {Title = "Auto Collect", Default = false})
+
+Tabs.Auto:AddInput("FarmDelayInput", {
     Title = "Farm Delay",
-    Description = "Default: 0.08 | Min 0.03",
-    Default = 0.08,
-    Min = 0.03,
-    Max = 1,
-    Rounding = 2,
-    Callback = function(Value) _G.FarmDelay = Value end
+    Default = "0.08",
+    Placeholder = "Min 0.03",
+    Numeric = true,
+    Finished = true,
+    Callback = function(Value)
+        _G.FarmDelay = tonumber(Value) or 0.08
+    end
 })
 
 Tabs.Auto:AddInput("HitCountInput", {
@@ -118,20 +124,45 @@ Tabs.Auto:AddInput("HitCountInput", {
     Placeholder = "Max Hit (Ex: 5)",
     Numeric = true,
     Finished = true,
-    Callback = function(Value) _G.HitCount = tonumber(Value) end
+    Callback = function(Value)
+        _G.HitCount = tonumber(Value) or 1
+    end
 })
 
 Tabs.Auto:AddButton({
     Title = "Set Position",
     Callback = function()
-        _G.SavedPos = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame
-        Fluent:Notify({Title = "Alephy Hub", Content = "Position Set!", Duration = 2})
+        if game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
+            _G.SavedPos = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame
+            Fluent:Notify({Title = "Alephy Hub", Content = "Position Set!", Duration = 2})
+        end
     end
 })
 
-Tabs.Auto:AddSection("Extra Farm")
-Tabs.Auto:AddToggle("AutoCollect", {Title = "Auto Collect", Default = false})
+local PlantSection = Tabs.Auto:AddSection("Planting & Harvesting")
+
+Tabs.Auto:AddDropdown("SelectSeeds", {
+    Title = "Select Seeds",
+    Values = {"Seed A", "Seed B", "Seed C"}, -- Silakan ubah nama bijinya sesuai game
+    Multi = false,
+    Default = 1,
+    Callback = function(Value)
+        _G.SelectedSeed = Value
+    end
+})
+
 Tabs.Auto:AddToggle("AutoPlant", {Title = "Auto Plant", Default = false})
+
+Tabs.Auto:AddDropdown("SelectHarvest", {
+    Title = "Select Harvest Item",
+    Values = {"Crop A", "Crop B", "Crop C"}, -- Silakan ubah nama tanaman sesuai game
+    Multi = false,
+    Default = 1,
+    Callback = function(Value)
+        _G.SelectedHarvestItem = Value
+    end
+})
+
 Tabs.Auto:AddToggle("AutoHarvest", {Title = "Auto Harvest", Default = false})
 
 -- [[ 6. ISI TAB MICS ]]
@@ -170,7 +201,6 @@ Tabs.Setting:AddButton({
     end
 })
 
--- Bagian SaveManager dipindah ke paling bawah agar tidak memblock render menu
 SaveManager:SetLibrary(Fluent)
 InterfaceManager:SetLibrary(Fluent)
 SaveManager:SetFolder("AlephyConfig/Configs")
