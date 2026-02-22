@@ -15,15 +15,14 @@ local Fluent = loadstring(game:HttpGet("https://github.com/dawid-scripts/Fluent/
 local SaveManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/SaveManager.lua"))()
 local InterfaceManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/InterfaceManager.lua"))()
 
--- [[ 1. ANTI-NUMPUK ]]
 if game:GetService("CoreGui"):FindFirstChild("AlephyToggle") then
     game:GetService("CoreGui").AlephyToggle:Destroy()
 end
 
--- Variabel Global
 _G.AutoFarm = false 
 _G.FarmDelay = 0.08
 _G.HitCount = 1
+_G.SelectedFarmItem = ""
 _G.SelectedSeed = ""
 _G.SelectedHarvestItem = ""
 
@@ -44,7 +43,6 @@ local Window = Fluent:CreateWindow({
     Icon = "rbxassetid://11210651131"
 })
 
--- [[ 2. TOMBOL MELAYANG ]]
 local ScreenGui = Instance.new("ScreenGui")
 local ImageButton = Instance.new("ImageButton")
 local UICorner = Instance.new("UICorner")
@@ -69,7 +67,6 @@ ImageButton.MouseButton1Click:Connect(function()
     Window:Minimize()
 end)
 
--- [[ 3. SETUP TABS ]]
 local Tabs = {
     Player = Window:AddTab({ Title = "Player", Icon = "user" }),
     Auto = Window:AddTab({ Title = "Auto", Icon = "play" }),
@@ -78,29 +75,35 @@ local Tabs = {
     Setting = Window:AddTab({ Title = "Setting", Icon = "settings" })
 }
 
--- [[ 4. TAB PLAYER ]]
 Tabs.Player:AddSection("Announcement")
 Tabs.Player:AddParagraph({
     Title = "Update Log",
-    Content = "v1.0.0 Beta:\n• Clean UI Implementation\n• Added Seed & Harvest Selectors\n• Fixed Section Grouping"
+    Content = "v1.0.0 Beta:\n• Added Item Selector for Farming\n• Added Seed & Harvest Selectors\n• Clean UI Implementation"
 })
 
 Tabs.Player:AddSection("User Status")
-Tabs.Player:AddParagraph({ Title = "👤 Username: " .. game.Players.LocalPlayer.Name })
-local PingLabel = Tabs.Player:AddParagraph({ Title = "📶 Ping: Calculating..." })
-local FPSLabel = Tabs.Player:AddParagraph({ Title = "💻 FPS: Calculating..." })
+Tabs.Player:AddParagraph({ Title = "Username: " .. game.Players.LocalPlayer.Name })
+local PingLabel = Tabs.Player:AddParagraph({ Title = "Ping: Calculating..." })
+local FPSLabel = Tabs.Player:AddParagraph({ Title = "FPS: Calculating..." })
 
 task.spawn(function()
     while task.wait(1) do
         local fps = math.floor(1 / task.wait())
         local pingNum = game:GetService("Stats").Network.ServerStatsItem["Data Ping"]:GetValue()
-        PingLabel:SetTitle("📶 Ping: " .. math.floor(pingNum) .. " ms") 
-        FPSLabel:SetTitle("💻 FPS: " .. tostring(fps))
+        PingLabel:SetTitle("Ping: " .. math.floor(pingNum) .. " ms") 
+        FPSLabel:SetTitle("FPS: " .. tostring(fps))
     end
 end)
 
--- [[ 5. ISI TAB AUTO ]]
 local FarmSection = Tabs.Auto:AddSection("Farming Tools")
+
+Tabs.Auto:AddDropdown("SelectFarmItem", {
+    Title = "Select Item to Farm",
+    Values = {"Wood", "Stone", "Iron", "Gold", "Diamond"},
+    Multi = false,
+    Default = 1,
+    Callback = function(Value) _G.SelectedFarmItem = Value end
+})
 
 Tabs.Auto:AddToggle("AutoFarm", {Title = "Auto Farm", Default = false}):OnChanged(function(Value)
     _G.AutoFarm = Value
@@ -114,9 +117,7 @@ Tabs.Auto:AddInput("FarmDelayInput", {
     Placeholder = "Min 0.03",
     Numeric = true,
     Finished = true,
-    Callback = function(Value)
-        _G.FarmDelay = tonumber(Value) or 0.08
-    end
+    Callback = function(Value) _G.FarmDelay = tonumber(Value) or 0.08 end
 })
 
 Tabs.Auto:AddInput("HitCountInput", {
@@ -124,9 +125,7 @@ Tabs.Auto:AddInput("HitCountInput", {
     Placeholder = "Max Hit (Ex: 5)",
     Numeric = true,
     Finished = true,
-    Callback = function(Value)
-        _G.HitCount = tonumber(Value) or 1
-    end
+    Callback = function(Value) _G.HitCount = tonumber(Value) or 1 end
 })
 
 Tabs.Auto:AddButton({
@@ -143,29 +142,24 @@ local PlantSection = Tabs.Auto:AddSection("Planting & Harvesting")
 
 Tabs.Auto:AddDropdown("SelectSeeds", {
     Title = "Select Seeds",
-    Values = {"Seed A", "Seed B", "Seed C"}, -- Silakan ubah nama bijinya sesuai game
+    Values = {"Seed A", "Seed B", "Seed C"}, 
     Multi = false,
     Default = 1,
-    Callback = function(Value)
-        _G.SelectedSeed = Value
-    end
+    Callback = function(Value) _G.SelectedSeed = Value end
 })
 
 Tabs.Auto:AddToggle("AutoPlant", {Title = "Auto Plant", Default = false})
 
 Tabs.Auto:AddDropdown("SelectHarvest", {
     Title = "Select Harvest Item",
-    Values = {"Crop A", "Crop B", "Crop C"}, -- Silakan ubah nama tanaman sesuai game
+    Values = {"Crop A", "Crop B", "Crop C"}, 
     Multi = false,
     Default = 1,
-    Callback = function(Value)
-        _G.SelectedHarvestItem = Value
-    end
+    Callback = function(Value) _G.SelectedHarvestItem = Value end
 })
 
 Tabs.Auto:AddToggle("AutoHarvest", {Title = "Auto Harvest", Default = false})
 
--- [[ 6. ISI TAB MICS ]]
 Tabs.Mics:AddSection("Movement")
 Tabs.Mics:AddToggle("WalkspeedToggle", {Title = "Walkspeed", Default = false}):OnChanged(function(Value)
     if game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("Humanoid") then
@@ -177,7 +171,6 @@ Tabs.Mics:AddToggle("Noclip", {Title = "No Clip", Default = false})
 Tabs.Mics:AddSection("Visual")
 Tabs.Mics:AddToggle("Zoom", {Title = "Infinite Zoom", Default = false})
 
--- [[ 7. TAB WEBHOOK ]]
 Tabs.Webhook:AddSection("Discord Notifier")
 Tabs.Webhook:AddInput("WebhookURL", {
     Title = "Webhook Link",
@@ -191,7 +184,6 @@ Tabs.Webhook:AddDropdown("Notifier", {
     Default = {},
 })
 
--- [[ 8. TAB SETTING ]]
 Tabs.Setting:AddSection("Menu Control")
 Tabs.Setting:AddButton({
     Title = "Reset Menu",
