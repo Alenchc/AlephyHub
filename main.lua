@@ -35,6 +35,7 @@ local Window = Fluent:CreateWindow({
     SubTitle = "by Alench",
     TabWidth = 160,
     Size = UDim2.fromOffset(580, 460),
+    Resizable = true, -- SEKARANG BISA DIGEDEIN / DIKECILIN USER
     Acrylic = true, 
     Theme = "Dark",
     MinimizeKey = Enum.KeyCode.LeftControl,
@@ -73,20 +74,29 @@ local Tabs = {
     Setting = Window:AddTab({ Title = "Setting", Icon = "settings" })
 }
 
--- [[ TAB PLAYER ]]
+-- [[ TAB PLAYER - NO EMOJI ]]
 Tabs.Player:AddSection("Announcement")
 Tabs.Player:AddParagraph({
     Title = "Update Log",
-    Content = "v1.0.0 Beta:\n• Fixed Bottom Margin\n• Clean UI Implementation"
+    Content = "v1.0.0 Beta:\n• Resizable UI Enabled\n• Clean Text (No Emojis)\n• Fixed Bottom Margin"
 })
 Tabs.Player:AddSection("User Status")
-Tabs.Player:AddParagraph({ Title = "👤 Username: " .. game.Players.LocalPlayer.Name })
-local PingLabel = Tabs.Player:AddParagraph({ Title = "📶 Ping: Calculating..." })
-local FPSLabel = Tabs.Player:AddParagraph({ Title = "💻 FPS: Calculating..." })
-Tabs.Player:AddParagraph({Title = "", Content = ""}) -- Margin Bawah
+Tabs.Player:AddParagraph({ Title = "Username: " .. game.Players.LocalPlayer.Name })
+local PingLabel = Tabs.Player:AddParagraph({ Title = "Ping: Calculating..." })
+local FPSLabel = Tabs.Player:AddParagraph({ Title = "FPS: Calculating..." })
+Tabs.Player:AddParagraph({Title = "", Content = ""})
+
+task.spawn(function()
+    while task.wait(1) do
+        local fps = math.floor(1 / task.wait())
+        local pingNum = game:GetService("Stats").Network.ServerStatsItem["Data Ping"]:GetValue()
+        PingLabel:SetTitle("Ping: " .. math.floor(pingNum) .. " ms") 
+        FPSLabel:SetTitle("FPS: " .. tostring(fps))
+    end
+end)
 
 -- [[ TAB AUTO ]]
-Tabs.Auto:AddSection("Farming Tools")
+local FarmSection = Tabs.Auto:AddSection("Farming Tools")
 Tabs.Auto:AddDropdown("SelectFarmItem", {
     Title = "Select Item to Farm",
     Values = {"Wood", "Stone", "Iron", "Gold", "Diamond"},
@@ -139,7 +149,7 @@ Tabs.Auto:AddDropdown("SelectHarvest", {
     Callback = function(Value) _G.SelectedHarvestItem = Value end
 })
 Tabs.Auto:AddToggle("AutoHarvest", {Title = "Auto Harvest", Default = false})
-Tabs.Auto:AddParagraph({Title = "", Content = ""}) -- Margin Bawah
+Tabs.Auto:AddParagraph({Title = "", Content = ""})
 
 -- [[ TAB MICS ]]
 Tabs.Mics:AddSection("Movement")
@@ -151,7 +161,7 @@ end)
 Tabs.Mics:AddToggle("Noclip", {Title = "No Clip", Default = false})
 Tabs.Mics:AddSection("Visual")
 Tabs.Mics:AddToggle("Zoom", {Title = "Infinite Zoom", Default = false})
-Tabs.Mics:AddParagraph({Title = "", Content = ""}) -- Margin Bawah
+Tabs.Mics:AddParagraph({Title = "", Content = ""})
 
 -- [[ TAB WEBHOOK ]]
 Tabs.Webhook:AddSection("Discord Notifier")
@@ -166,7 +176,7 @@ Tabs.Webhook:AddDropdown("Notifier", {
     Multi = true,
     Default = {},
 })
-Tabs.Webhook:AddParagraph({Title = "", Content = ""}) -- Margin Bawah
+Tabs.Webhook:AddParagraph({Title = "", Content = ""})
 
 -- [[ TAB SETTING ]]
 Tabs.Setting:AddSection("Menu Control")
