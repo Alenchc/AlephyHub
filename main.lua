@@ -31,7 +31,7 @@ local Window = Fluent:CreateWindow({
     Acrylic = true, 
     Theme = "Dark",
     MinimizeKey = Enum.KeyCode.LeftControl,
-    Icon = "rbxassetid://111353464984890" 
+    Icon = "rbxassetid://2888643471" 
 })
 
 -- Floating button
@@ -46,7 +46,7 @@ ImageButton.BackgroundColor3 = Color3.fromRGB(150, 0, 0)
 ImageButton.BorderSizePixel = 0
 ImageButton.Position = UDim2.new(0.1, 0, 0.1, 0)
 ImageButton.Size = UDim2.new(0, 50, 0, 50)
-ImageButton.Image = "rbxassetid://111353464984890"
+ImageButton.Image = "rbxassetid://2888643471"
 ImageButton.Draggable = true
 
 ImageButton.MouseButton1Click:Connect(function()
