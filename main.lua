@@ -14,6 +14,11 @@ local Fluent = loadstring(game:HttpGet("https://github.com/dawid-scripts/Fluent/
 local SaveManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/SaveManager.lua"))()
 local InterfaceManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/InterfaceManager.lua"))()
 
+_G.AutoFarm = false -- Default OFF
+spawn(function()
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/Alenchc/AlephyHub/main/autofarm.lua"))()
+end)
+
 local Window = Fluent:CreateWindow({
     Title = "Alephy. [Beta Test]",
     SubTitle = "by Alench",
@@ -76,8 +81,8 @@ spawn(function()
     while task.wait(1) do
         local fps = math.floor(1 / task.wait())
        local pingNum = game:GetService("Stats").Network.ServerStatsItem["Data Ping"]:GetValue()
-        PingLabel:SetTitle("📶 Ping: " .. math.floor(pingNum) .. " ms") 
-        FPSLabel:SetTitle("💻 FPS: " .. tostring(fps))
+        PingLabel:SetTitle("Ping: " .. math.floor(pingNum) .. " ms") 
+        FPSLabel:SetTitle("FPS: " .. tostring(fps))
     end
 end)
 
@@ -102,12 +107,13 @@ Tabs.Auto:AddDropdown("SelectItem", {
 })
 
 Tabs.Auto:AddToggle("AutoFarm", {Title = "Auto Farm", Default = false}):OnChanged(function(Value)
-    _G.AutoFarm = Value
-    -- Logika: Delay punch 0.05
-    spawn(function()
-        while _G.AutoFarm do
-            -- Masukkan fungsi punch/click di sini
-            task.wait(0.05)
+        _G.AutoFarm = Value -- Ini akan mengontrol loop di file autofarm.lua
+        if Value then
+            Fluent:Notify({
+                Title = "Alephy Hub",
+                Content = "Auto Farm Enabled",
+                Duration = 2
+            })
         end
     end)
 end)
