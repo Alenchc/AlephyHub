@@ -57,43 +57,51 @@ Tabs.Player:AddSection("Announcement")
 
 Tabs.Player:AddParagraph({
     Title = "Update Log",
-    Content = "v1.1.0:\n• Fixed Rendering Elements\n• Clean Interface\n• Fixed Ping & FPS Tracker"
+    Content = "v1.1.0:\n• Fixed Rendering Elements\n• Clean Interface\n• Bulletproof Ping & FPS"
 })
 
-Tabs.Player:AddSection("User Status")
+-- Kita buat Section khusus yang akan kita update judulnya
+local StatusSection = Tabs.Player:AddSection("User Status")
 
-Tabs.Player:AddParagraph({
+local UserPara = Tabs.Player:AddParagraph({
     Title = "Username",
     Content = game.Players.LocalPlayer.Name
 })
 
-local PingLabel = Tabs.Player:AddParagraph({
-    Title = "Ping",
-    Content = "Measuring..."
+local PingPara = Tabs.Player:AddParagraph({
+    Title = "Ping: Measuring...",
+    Content = ""
 })
 
-local FPSLabel = Tabs.Player:AddParagraph({
-    Title = "FPS",
-    Content = "Measuring..."
+local FPSPara = Tabs.Player:AddParagraph({
+    Title = "FPS: Measuring...",
+    Content = ""
 })
 
--- Logic Ping & FPS yang sudah di-fix
+-- Logic Update yang lebih "Galak"
 task.spawn(function()
+    local Stats = game:GetService("Stats")
     local RunService = game:GetService("RunService")
-    while task.wait(1) do
-        -- Fix Ping
-        local ping = 0
-        pcall(function()
-            -- Metode Stats lebih stabil di banyak executor
-            ping = math.floor(game:GetService("Stats").Network.ServerStatsItem["Data Ping"]:GetValue())
-        end)
-        
-        -- Fix FPS (Lebih akurat pake RenderStepped)
-        local fps = math.floor(1 / RunService.RenderStepped:Wait())
+    
+    while task.wait(0.5) do -- Update setiap 0.5 detik biar kerasa real-time
+        local ping = "0"
+        local fps = "0"
 
-        -- Update Content & Title (Biar maksa refresh UI)
-        PingLabel:SetTitle("Ping: " .. ping .. " ms")
-        FPSLabel:SetTitle("FPS: " .. fps)
+        -- Ambil Ping
+        pcall(function()
+            ping = math.floor(Stats.Network.ServerStatsItem["Data Ping"]:GetValue())
+        end)
+
+        -- Ambil FPS
+        pcall(function()
+            fps = math.floor(1 / RunService.RenderStepped:Wait())
+        end)
+
+        -- Update menggunakan pcall biar kalau gagal gak stop scriptnya
+        pcall(function()
+            PingPara:SetTitle("Ping: " .. tostring(ping) .. " ms")
+            FPSPara:SetTitle("FPS: " .. tostring(fps))
+        end)
     end
 end)
 
