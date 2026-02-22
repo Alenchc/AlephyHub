@@ -10,17 +10,17 @@
 ]]
 
 ---@diagnostic disable: undefined-global, deprecated
+
 local Fluent = loadstring(game:HttpGet("https://github.com/dawid-scripts/Fluent/releases/latest/download/main.lua"))()
 local SaveManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/SaveManager.lua"))()
 local InterfaceManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/InterfaceManager.lua"))()
 
-_G.AutoFarm = false -- Default OFF
+_G.AutoFarm = false 
+
 spawn(function()
-    --loadstring(game:HttpGet("https://raw.githubusercontent.com/Alenchc/AlephyHub/refs/heads/main/autofarm.lua"))()
-end)
-if not success then
-        warn("Gagal memuat Autofarm: " .. tostring(err))
-    end
+    pcall(function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/Alenchc/AlephyHub/main/autofarm.lua"))()
+    end)
 end)
 
 local Window = Fluent:CreateWindow({
@@ -31,29 +31,24 @@ local Window = Fluent:CreateWindow({
     Acrylic = true, 
     Theme = "Dark",
     MinimizeKey = Enum.KeyCode.LeftControl,
-    Icon = "rbxassetid://" 
+    Icon = "rbxassetid://11210651131"
 })
 
--- Floating button
 local ScreenGui = Instance.new("ScreenGui")
 local ImageButton = Instance.new("ImageButton")
-
 ScreenGui.Parent = game:GetService("CoreGui")
 ScreenGui.Name = "AlephyToggle"
-
 ImageButton.Parent = ScreenGui
 ImageButton.BackgroundColor3 = Color3.fromRGB(150, 0, 0)
 ImageButton.BorderSizePixel = 0
 ImageButton.Position = UDim2.new(0.1, 0, 0.1, 0)
 ImageButton.Size = UDim2.new(0, 50, 0, 50)
-ImageButton.Image = "rbxassetid://"
+ImageButton.Image = "rbxassetid://11210651131"
 ImageButton.Draggable = true
-
 ImageButton.MouseButton1Click:Connect(function()
     game:GetService("VirtualInputManager"):SendKeyEvent(true, Enum.KeyCode.LeftControl, false, game)
 end)
 
--- Notif sc
 Fluent:Notify({
     Title = "Alephy Hub",
     Content = "Script successfully loaded! Welcome, " .. game.Players.LocalPlayer.Name,
@@ -68,11 +63,9 @@ local Tabs = {
     Setting = Window:AddTab({ Title = "Setting", Icon = "settings" })
 }
 
---- --- --- --- --- --- --- --- --- --- --- ---
---- MENU PLAYER
---- --- --- --- --- --- --- --- --- --- --- ---
+local AnnounceSection = Tabs.Player:AddSection("Announcement")
 Tabs.Player:AddParagraph({
-    Title = "Announcement / Update Log",
+    Title = "Update Log",
     Content = "v1.0.0 Beta:\n• Clean UI Released\n• Integrated with Delta Executor\n• Basic Auto Farm added"
 })
 
@@ -84,25 +77,13 @@ local FPSLabel = Tabs.Player:AddParagraph({ Title = "FPS: Calculating..." })
 spawn(function()
     while task.wait(1) do
         local fps = math.floor(1 / task.wait())
-       local pingNum = game:GetService("Stats").Network.ServerStatsItem["Data Ping"]:GetValue()
+        local pingNum = game:GetService("Stats").Network.ServerStatsItem["Data Ping"]:GetValue()
         PingLabel:SetTitle("Ping: " .. math.floor(pingNum) .. " ms") 
         FPSLabel:SetTitle("FPS: " .. tostring(fps))
     end
 end)
 
-for i = 1, 5 do
-    Tabs.Player:AddParagraph({ Title = " ", Content = " " })
-end
-
-Fluent:SetTheme("Dark") 
-
-Window:SelectTab(1)
-
---- --- --- --- --- --- --- --- --- --- --- ---
---- MENU AUTO
---- --- --- --- --- --- --- --- --- --- --- ---
-local AutoSection = Tabs.Auto:AddSection("Farming Tools")
-
+local FarmSection = Tabs.Auto:AddSection("Farming Tools")
 Tabs.Auto:AddDropdown("SelectItem", {
     Title = "Select Item",
     Values = {"Wood", "Stone", "Gold", "Diamond"},
@@ -111,15 +92,7 @@ Tabs.Auto:AddDropdown("SelectItem", {
 })
 
 Tabs.Auto:AddToggle("AutoFarm", {Title = "Auto Farm", Default = false}):OnChanged(function(Value)
-        _G.AutoFarm = Value -- Ini akan mengontrol loop di file autofarm.lua
-        if Value then
-            Fluent:Notify({
-                Title = "Alephy Hub",
-                Content = "Auto Farm Enabled",
-                Duration = 2
-            })
-        end
-    end)
+    _G.AutoFarm = Value
 end)
 
 Tabs.Auto:AddToggle("AutoCollect", {Title = "Auto Collect", Default = false})
@@ -131,57 +104,36 @@ Tabs.Auto:AddDropdown("SelectSeeds", {
     Multi = false,
     Default = 1,
 })
-
 Tabs.Auto:AddToggle("AutoPlant", {Title = "Auto Plant", Default = false})
 Tabs.Auto:AddToggle("AutoHarvest", {Title = "Auto Harvest", Default = false})
 
---- --- --- --- --- --- --- --- --- --- --- ---
---- MENU MICS
---- --- --- --- --- --- --- --- --- --- --- ---
+local MovementSection = Tabs.Mics:AddSection("Movement")
 Tabs.Mics:AddToggle("WalkspeedToggle", {Title = "Walkspeed", Default = false}):OnChanged(function(Value)
-    if Value then
-        game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 50 
-    else
-        game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 16
-    end
+    game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = Value and 50 or 16
 end)
-
 Tabs.Mics:AddToggle("Noclip", {Title = "No Clip", Default = false})
 Tabs.Mics:AddToggle("Fly", {Title = "Fly", Default = false})
+
+local MiscSection = Tabs.Mics:AddSection("Visual")
 Tabs.Mics:AddToggle("Zoom", {Title = "Infinite Zoom", Default = false})
 
---- --- --- --- --- --- --- --- --- --- --- ---
---- MENU WEBHOOK
---- --- --- --- --- --- --- --- --- --- --- ---
+local WebhookSection = Tabs.Webhook:AddSection("Discord Notifier")
 Tabs.Webhook:AddInput("WebhookURL", {
     Title = "Webhook Link",
     Placeholder = "Enter Discord Webhook URL",
     Callback = function(Value) _G.WebhookURL = Value end
 })
 
-Tabs.Webhook:AddDropdown("Notifier", {
-    Title = "Select Notifier",
-    Values = {"Autofarm", "Autoplant", "Autoharvest"},
-    Multi = true,
-    Default = {},
-})
-
---- --- --- --- --- --- --- --- --- --- --- ---
---- MENU SETTING
---- --- --- --- --- --- --- --- --- --- --- ---
+local ConfigSection = Tabs.Setting:AddSection("Configuration")
 Tabs.Setting:AddButton({
     Title = "Reset Menu",
     Callback = function() Window:Destroy() end
 })
 
--- Konfigurasi Save & Load otomatis
 SaveManager:SetLibrary(Fluent)
 InterfaceManager:SetLibrary(Fluent)
-SaveManager:IgnoreThemeSettings()
-SaveManager:SetIgnoreIndexes({})
 InterfaceManager:SetFolder("AlephyConfig")
 SaveManager:SetFolder("AlephyConfig/Configs")
-
 InterfaceManager:BuildInterfaceSection(Tabs.Setting)
 SaveManager:BuildConfigSection(Tabs.Setting)
 
