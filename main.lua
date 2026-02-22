@@ -34,13 +34,12 @@ local Window = Fluent:CreateWindow({
     Icon = "rbxassetid://11210651131"
 })
 
+-- Bagian Warna (Sudah diperkuat merahnya)
 local CustomTheme = Fluent.Themes.Dark
 CustomTheme.Accent = Color3.fromRGB(255, 0, 0)
 CustomTheme.WindowBackground = Color3.fromRGB(25, 0, 0)
 CustomTheme.TabBackground = Color3.fromRGB(35, 0, 0)
 CustomTheme.ElementBackground = Color3.fromRGB(40, 0, 0)
-CustomTheme.HeaderText = Color3.fromRGB(255, 255, 255) -- Tetap putih agar terbaca
-CustomTheme.MainRed = Color3.fromRGB(255, 0, 0)
 Fluent:SetTheme("Dark")
 
 local ScreenGui = Instance.new("ScreenGui")
@@ -49,7 +48,7 @@ local UICorner = Instance.new("UICorner")
 
 ScreenGui.Parent = game:GetService("CoreGui")
 ScreenGui.Name = "AlephyToggle"
-ScreenGui.IgnoreGuiInset = true -- Biar aman dari margin layar
+ScreenGui.IgnoreGuiInset = true 
 ScreenGui.DisplayOrder = 999
 
 ImageButton.Parent = ScreenGui
@@ -60,7 +59,7 @@ ImageButton.Size = UDim2.new(0, 55, 0, 55)
 ImageButton.Image = "rbxassetid://11210651131"
 ImageButton.ZIndex = 10
 
-UICorner.CornerRadius = UDim.new(0, 16) -- Level bulatnya (15px)
+UICorner.CornerRadius = UDim.new(1, 0) -- Mengubah ke Bulat Lingkaran
 UICorner.Parent = ImageButton
 
 local Dragging = false
@@ -157,7 +156,9 @@ Tabs.Auto:AddToggle("AutoHarvest", {Title = "Auto Harvest", Default = false})
 
 local MovementSection = Tabs.Mics:AddSection("Movement")
 Tabs.Mics:AddToggle("WalkspeedToggle", {Title = "Walkspeed", Default = false}):OnChanged(function(Value)
-    game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = Value and 50 or 16
+    if game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("Humanoid") then
+        game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = Value and 50 or 16
+    end
 end)
 Tabs.Mics:AddToggle("Noclip", {Title = "No Clip", Default = false})
 Tabs.Mics:AddToggle("Fly", {Title = "Fly", Default = false})
@@ -175,7 +176,7 @@ Tabs.Webhook:AddInput("WebhookURL", {
 local ConfigSection = Tabs.Setting:AddSection("Configuration")
 Tabs.Setting:AddButton({
     Title = "Reset Menu",
-    Callback = function() Window:Destroy() end
+    Callback = function() Window:Destroy() ScreenGui:Destroy() end -- Hapus tombol juga saat reset
 })
 
 SaveManager:SetLibrary(Fluent)
