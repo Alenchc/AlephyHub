@@ -34,7 +34,12 @@ local Window = Fluent:CreateWindow({
     Icon = "rbxassetid://11210651131"
 })
 
--- [[ FLOATING BUTTON ROUNDED & FIX KLIK ]]
+-- [[ UBAH AKSEN BIRU JADI MERAH ]]
+local CustomTheme = Fluent.Themes.Dark
+CustomTheme.Accent = Color3.fromRGB(255, 0, 0)
+Fluent:SetTheme("Dark")
+
+-- [[ FLOATING BUTTON ROUNDED & ANTI-BUG ]]
 local ScreenGui = Instance.new("ScreenGui")
 local ImageButton = Instance.new("ImageButton")
 local UICorner = Instance.new("UICorner")
@@ -55,9 +60,9 @@ ImageButton.Draggable = true
 UICorner.CornerRadius = UDim.new(0, 15)
 UICorner.Parent = ImageButton
 
--- Fungsi Klik Anti Macet
+-- Fungsi Klik Baru (Pasti Berhasil)
 ImageButton.MouseButton1Click:Connect(function()
-    game:GetService("VirtualInputManager"):SendKeyEvent(true, Enum.KeyCode.LeftControl, false, game)
+    Window:Minimize() -- Langsung panggil fungsi minimize Fluent
 end)
 
 local Tabs = {
@@ -68,22 +73,22 @@ local Tabs = {
     Setting = Window:AddTab({ Title = "Setting", Icon = "settings" })
 }
 
--- [[ TAB PLAYER - BALIK LAGI ]]
+-- [[ TAB PLAYER ]]
 local UserSection = Tabs.Player:AddSection("User Status")
-local UserLabel = Tabs.Player:AddParagraph({ Title = "Username: " .. game.Players.LocalPlayer.Name })
-local PingLabel = Tabs.Player:AddParagraph({ Title = "Ping: Calculating..." })
-local FPSLabel = Tabs.Player:AddParagraph({ Title = "FPS: Calculating..." })
+local UserLabel = Tabs.Player:AddParagraph({ Title = "👤 Username: " .. game.Players.LocalPlayer.Name })
+local PingLabel = Tabs.Player:AddParagraph({ Title = "📶 Ping: Calculating..." })
+local FPSLabel = Tabs.Player:AddParagraph({ Title = "💻 FPS: Calculating..." })
 
 task.spawn(function()
     while task.wait(1) do
         local fps = math.floor(1 / task.wait())
         local pingNum = game:GetService("Stats").Network.ServerStatsItem["Data Ping"]:GetValue()
-        PingLabel:SetTitle("Ping: " .. math.floor(pingNum) .. " ms") 
-        FPSLabel:SetTitle("FPS: " .. tostring(fps))
+        PingLabel:SetTitle("📶 Ping: " .. math.floor(pingNum) .. " ms") 
+        FPSLabel:SetTitle("💻 FPS: " .. tostring(fps))
     end
 end)
 
--- [[ TAB AUTO - LENGKAP ]]
+-- [[ TAB AUTO ]]
 local FarmSection = Tabs.Auto:AddSection("Farming Tools")
 Tabs.Auto:AddDropdown("SelectItem", {
     Title = "Select Item",
@@ -109,7 +114,7 @@ Tabs.Mics:AddToggle("WalkspeedToggle", {Title = "Walkspeed", Default = false}):O
 end)
 Tabs.Mics:AddToggle("Noclip", {Title = "No Clip", Default = false})
 
--- [[ TAB WEBHOOK - NOTIFIER BALIK ]]
+-- [[ TAB WEBHOOK ]]
 local WebhookSection = Tabs.Webhook:AddSection("Discord Notifier")
 Tabs.Webhook:AddInput("WebhookURL", {
     Title = "Webhook Link",
