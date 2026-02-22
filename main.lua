@@ -60,18 +60,45 @@ Tabs.Player:AddParagraph({
     Content = "v1.1.0:\n• Fixed Rendering Elements\n• Clean Interface\n• Full Tab Recovery"
 })
 
-local SectionStatus = Tabs.Player:AddSection("User Status")
-Tabs.Player:AddParagraph({ Title = "Username: " .. game.Players.LocalPlayer.Name })
-local PingLabel = Tabs.Player:AddParagraph({ Title = "Ping: Calculating..." })
-local FPSLabel = Tabs.Player:AddParagraph({ Title = "FPS: Calculating..." })
+Tabs.Player:AddSection("User Status")
+
+Tabs.Player:AddParagraph({
+    Title = "Username",
+    Content = game.Players.LocalPlayer.Name
+})
+
+local PingLabel = Tabs.Player:AddParagraph({
+    Title = "Ping",
+    Content = "Calculating..."
+})
+
+local FPSLabel = Tabs.Player:AddParagraph({
+    Title = "FPS",
+    Content = "Calculating..."
+})
 
 task.spawn(function()
-    while task.wait(1) do
-        local fps = math.floor(1 / task.wait())
-        local pingNum = game:GetService("Stats").Network.ServerStatsItem["Data Ping"]:GetValue()
-        PingLabel:SetTitle("Ping: " .. math.floor(pingNum) .. " ms") 
-        FPSLabel:SetTitle("FPS: " .. tostring(fps))
-    end
+    local RunService = game:GetService("RunService")
+    local lastTime = tick()
+    local frameCount = 0
+
+    RunService.RenderStepped:Connect(function()
+        frameCount += 1
+
+        if tick() - lastTime >= 1 then
+            local fps = frameCount
+            frameCount = 0
+            lastTime = tick()
+
+            local ping = 0
+            pcall(function()
+                ping = math.floor(game.Players.LocalPlayer:GetNetworkPing() * 1000)
+            end)
+
+            PingLabel:SetContent("Ping: " .. ping .. " ms")
+            FPSLabel:SetContent("FPS: " .. tostring(fps))
+        end
+    end)
 end)
 
 -- [[ TAB AUTO ]]
