@@ -57,7 +57,7 @@ Tabs.Player:AddSection("Announcement")
 
 Tabs.Player:AddParagraph({
     Title = "Update Log",
-    Content = "v1.1.0:\n• Fixed Rendering Elements\n• Clean Interface\n• Full Tab Recovery"
+    Content = "v1.1.0:\n• Fixed Rendering Elements\n• Clean Interface\n• Fixed Ping & FPS Tracker"
 })
 
 Tabs.Player:AddSection("User Status")
@@ -69,31 +69,31 @@ Tabs.Player:AddParagraph({
 
 local PingLabel = Tabs.Player:AddParagraph({
     Title = "Ping",
-    Content = "Calculating..."
+    Content = "Measuring..."
 })
 
 local FPSLabel = Tabs.Player:AddParagraph({
     Title = "FPS",
-    Content = "Calculating..."
+    Content = "Measuring..."
 })
 
+-- Logic Ping & FPS yang sudah di-fix
 task.spawn(function()
+    local RunService = game:GetService("RunService")
     while task.wait(1) do
+        -- Fix Ping
         local ping = 0
-        local fps = 0
-
         pcall(function()
-            ping = math.floor(game.Players.LocalPlayer:GetNetworkPing() * 1000)
+            -- Metode Stats lebih stabil di banyak executor
+            ping = math.floor(game:GetService("Stats").Network.ServerStatsItem["Data Ping"]:GetValue())
         end)
+        
+        -- Fix FPS (Lebih akurat pake RenderStepped)
+        local fps = math.floor(1 / RunService.RenderStepped:Wait())
 
-        pcall(function()
-            local t = tick()
-            task.wait()
-            fps = math.floor(1 / (tick() - t))
-        end)
-
-        PingLabel:SetContent("Ping: " .. ping .. " ms")
-        FPSLabel:SetContent("FPS: " .. tostring(fps))
+        -- Update Content & Title (Biar maksa refresh UI)
+        PingLabel:SetTitle("Ping: " .. ping .. " ms")
+        FPSLabel:SetTitle("FPS: " .. fps)
     end
 end)
 
