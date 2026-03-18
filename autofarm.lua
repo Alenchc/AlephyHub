@@ -1,7 +1,7 @@
--- File: autofarm.lua
+-- autofarm.lua
 local player = game.Players.LocalPlayer
 
--- Fungsi utama autofarm
+-- autofarm
 local function runAutoFarm()
     while _G.AutoFarm do -- Mengecek apakah fitur sedang ON
         local character = player.Character
@@ -23,7 +23,7 @@ local function runAutoFarm()
     end
 end
 
--- Menjalankan fungsi dalam loop background
+-- loop
 spawn(function()
     while true do
         if _G.AutoFarm then
