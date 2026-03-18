@@ -28,7 +28,7 @@ _G.SelectedHarvestItem = ""
 _G.WebhookURL = ""
 _G.SelectedNotifiers = {}
 
--- Asset ID Bulan Sabit (Paling Stabil)
+-- Asset ID
 local MoonAsset = "rbxassetid://10734950309"
 
 local Window = Fluent:CreateWindow({
@@ -51,7 +51,7 @@ local Tabs = {
     Setting = Window:AddTab({ Title = "Setting", Icon = "settings" })
 }
 
--- [[ 1. TAB PLAYER ]]
+-- Tab Player
 local AnnounceSection = Tabs.Player:AddSection("Announcement")
 Tabs.Player:AddParagraph({
     Title = "Update Log",
@@ -63,7 +63,7 @@ Tabs.Player:AddParagraph({ Title = "Username", Content = game.Players.LocalPlaye
 local PingPara = Tabs.Player:AddParagraph({ Title = "Ping: Measuring...", Content = "" })
 local FPSPara = Tabs.Player:AddParagraph({ Title = "FPS: Measuring...", Content = "" })
 
--- [[ 2. TAB AUTO ]]
+-- Tab Auto
 local FarmSection = Tabs.Auto:AddSection("Farming Tools")
 Tabs.Auto:AddDropdown("SelectFarmItem", {
     Title = "Select Item to Farm",
@@ -100,7 +100,7 @@ Tabs.Auto:AddDropdown("SelectHarvest", {
 })
 Tabs.Auto:AddToggle("AutoHarvest", {Title = "Auto Harvest", Default = false})
 
--- [[ 3. TAB MICS ]]
+-- Tab Misc
 local MovementSection = Tabs.Mics:AddSection("Movement")
 Tabs.Mics:AddToggle("WalkspeedToggle", {Title = "Walkspeed", Default = false}):OnChanged(function(Value)
     if game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("Humanoid") then
@@ -111,7 +111,7 @@ Tabs.Mics:AddToggle("Noclip", {Title = "No Clip", Default = false})
 local VisualSection = Tabs.Mics:AddSection("Visual")
 Tabs.Mics:AddToggle("Zoom", {Title = "Infinite Zoom", Default = false})
 
--- [[ 4. TAB WEBHOOK ]]
+-- Tab Webhook
 local WebhookSection = Tabs.Webhook:AddSection("Discord Notifier")
 Tabs.Webhook:AddInput("WebhookURL", {
     Title = "Webhook Link", Placeholder = "URL Discord",
@@ -128,7 +128,7 @@ Tabs.Webhook:AddButton({
     end
 })
 
--- [[ TOMBOL MERAH ]]
+-- Red Button
 local ScreenGui = Instance.new("ScreenGui", game:GetService("CoreGui"))
 local ImageButton = Instance.new("ImageButton", ScreenGui)
 local UICorner = Instance.new("UICorner", ImageButton)
@@ -143,7 +143,7 @@ ImageButton.Draggable = true
 UICorner.CornerRadius = UDim.new(0, 12)
 ImageButton.MouseButton1Click:Connect(function() Window:Minimize() end)
 
--- Logic Update Ping/FPS
+-- Logic Ping/FPS
 task.spawn(function()
     local Stats = game:GetService("Stats")
     local RunService = game:GetService("RunService")
@@ -163,7 +163,7 @@ task.spawn(function()
     end
 end)
 
--- [[ 5. TAB SETTING ]]
+-- Tab Setting
 SaveManager:SetLibrary(Fluent)
 InterfaceManager:SetLibrary(Fluent)
 SaveManager:SetFolder("AlephyConfig")
